@@ -4,6 +4,7 @@ import (
 	"crypto/ecdsa"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/IceWhaleTech/CasaOS-Common/external"
 	"github.com/IceWhaleTech/CasaOS-Common/utils/jwt"
@@ -13,6 +14,25 @@ import (
 	"github.com/labstack/echo/v4"
 	echo_middleware "github.com/labstack/echo/v4/middleware"
 )
+
+// systemPackageRoutePrefix covers the routes that install operating system
+// packages as root.
+const systemPackageRoutePrefix = "/v1/sys/packages"
+
+// skipJWT reports whether the JWT check can be skipped for a request.
+//
+// Loopback requests are trusted for most of the API, but never for the system
+// package routes: those run apt as root, and any local process can reach the
+// gateway from 127.0.0.1 - including a container CasaOS itself started on the
+// host network. The only client of these routes is the web UI, which always
+// sends an Authorization header, so requiring a token here costs nothing.
+func skipJWT(path, realIP string) bool {
+	if strings.HasPrefix(path, systemPackageRoutePrefix) {
+		return false
+	}
+
+	return realIP == "::1" || realIP == "127.0.0.1"
+}
 
 func InitV1Router() http.Handler {
 	e := echo.New()
@@ -43,7 +63,7 @@ func InitV1Router() http.Handler {
 	//	e.Any("/v1/test", v1.CheckNetwork)
 	v1Group.Use(echo_middleware.JWTWithConfig(echo_middleware.JWTConfig{
 		Skipper: func(c echo.Context) bool {
-			return c.RealIP() == "::1" || c.RealIP() == "127.0.0.1"
+			return skipJWT(c.Path(), c.RealIP())
 		},
 		ParseTokenFunc: func(token string, c echo.Context) (interface{}, error) {
 			valid, claims, err := jwt.Validate(token, func() (*ecdsa.PublicKey, error) { return external.GetPublicKey(config.CommonInfo.RuntimePath) })
