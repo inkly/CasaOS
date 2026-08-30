@@ -15,20 +15,27 @@ import (
 	echo_middleware "github.com/labstack/echo/v4/middleware"
 )
 
-// systemPackageRoutePrefix covers the routes that install operating system
-// packages as root.
-const systemPackageRoutePrefix = "/v1/sys/packages"
+// rootPrivilegedRoutePrefixes covers the routes that act on the host as root:
+// installing operating system packages, and creating or removing the system
+// accounts that protect Samba shares.
+var rootPrivilegedRoutePrefixes = []string{
+	"/v1/sys/packages",
+	"/v1/samba/users",
+}
 
 // skipJWT reports whether the JWT check can be skipped for a request.
 //
-// Loopback requests are trusted for most of the API, but never for the system
-// package routes: those run apt as root, and any local process can reach the
-// gateway from 127.0.0.1 - including a container CasaOS itself started on the
-// host network. The only client of these routes is the web UI, which always
-// sends an Authorization header, so requiring a token here costs nothing.
+// Loopback requests are trusted for most of the API, but never for the
+// routes that act as root on the host: those run apt, useradd and smbpasswd, and
+// any local process can reach the gateway from 127.0.0.1 - including a container
+// CasaOS itself started on the host network. The only client of these routes is
+// the web UI, which always sends an Authorization header, so requiring a token
+// here costs nothing.
 func skipJWT(path, realIP string) bool {
-	if strings.HasPrefix(path, systemPackageRoutePrefix) {
-		return false
+	for _, prefix := range rootPrivilegedRoutePrefixes {
+		if strings.HasPrefix(path, prefix) {
+			return false
+		}
 	}
 
 	return realIP == "::1" || realIP == "127.0.0.1"
@@ -198,6 +205,15 @@ func InitV1Router() http.Handler {
 				v1SharesGroup.POST("", v1.PostSambaSharesCreate)
 				v1SharesGroup.DELETE("/:id", v1.DeleteSambaShares)
 				v1SharesGroup.GET("/status", v1.GetSambaStatus)
+			}
+
+			v1SambaUsersGroup := v1SambaGroup.Group("/users")
+			v1SambaUsersGroup.Use()
+			{
+				v1SambaUsersGroup.GET("", v1.GetSambaUsersList)
+				v1SambaUsersGroup.POST("", v1.PostSambaUserCreate)
+				v1SambaUsersGroup.PUT("/:username/password", v1.PutSambaUserPassword)
+				v1SambaUsersGroup.DELETE("/:username", v1.DeleteSambaUser)
 			}
 		}
 		v1NotifyGroup := v1Group.Group("/notify")

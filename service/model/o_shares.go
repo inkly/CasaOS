@@ -11,12 +11,16 @@
 package model
 
 type SharesDBModel struct {
-	ID        uint   `gorm:"column:id;primary_key" json:"id"`
-	Anonymous bool   `json:"anonymous"`
-	Path      string `json:"path"`
-	Name      string `json:"name"`
-	Updated   int64  `gorm:"autoUpdateTime"`
-	Created   int64  `gorm:"autoCreateTime"`
+	ID        uint `gorm:"column:id;primary_key" json:"id"`
+	Anonymous bool `json:"anonymous"`
+	// Username is the Samba account allowed to mount the share. Empty means the
+	// share is open to guests, which is what every row created before
+	// authenticated shares existed carries, so an upgrade leaves them untouched.
+	Username string `json:"username"`
+	Path     string `json:"path"`
+	Name     string `json:"name"`
+	Updated  int64  `gorm:"autoUpdateTime"`
+	Created  int64  `gorm:"autoCreateTime"`
 }
 
 func (p *SharesDBModel) TableName() string {

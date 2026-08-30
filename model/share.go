@@ -14,4 +14,15 @@ type Shares struct {
 	ID        uint   `json:"id"`
 	Anonymous bool   `json:"anonymous"`
 	Path      string `json:"path"`
+	// Username is the share account allowed to mount a non-anonymous share. It
+	// is ignored when Anonymous is true.
+	Username string `json:"username"`
+}
+
+// SambaUser is the payload for creating a share account or changing its
+// password. It is never returned to a client: the password field only ever
+// travels inwards.
+type SambaUser struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
