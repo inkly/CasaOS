@@ -205,6 +205,7 @@ func InitV1Router() http.Handler {
 			{
 				v1SharesGroup.GET("", v1.GetSambaSharesList)
 				v1SharesGroup.POST("", v1.PostSambaSharesCreate)
+				v1SharesGroup.PUT("/:id", v1.PutSambaShare)
 				v1SharesGroup.DELETE("/:id", v1.DeleteSambaShares)
 				v1SharesGroup.GET("/status", v1.GetSambaStatus)
 			}

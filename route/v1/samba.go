@@ -200,6 +200,74 @@ func PostSambaSharesCreate(ctx echo.Context) error {
 	return ctx.JSON(common_err.SUCCESS, model.Result{Success: common_err.SUCCESS, Message: common_err.GetMsg(common_err.SUCCESS), Data: shares})
 }
 
+// PutSambaShare moves an existing share between guest access and a named
+// account, in either direction. An empty username makes it a guest share again.
+//
+// Only the shared directory itself is re-owned, never its contents. A media
+// share can hold millions of files and walking them inside an HTTP request is
+// not something a NAS should be asked to do. It is not needed either: files
+// created under a guest share are world-readable, and files created under a
+// protected share stay reachable by root, which is who a guest session maps to.
+func PutSambaShare(ctx echo.Context) error {
+	id := ctx.Param("id")
+
+	share, found := service.MyService.Shares().GetShareByID(id)
+	if !found {
+		return ctx.JSON(common_err.CLIENT_ERROR, model.Result{Success: common_err.CLIENT_ERROR, Message: "no such share"})
+	}
+
+	request := model.Shares{}
+	if err := ctx.Bind(&request); err != nil {
+		return ctx.JSON(common_err.CLIENT_ERROR, model.Result{Success: common_err.CLIENT_ERROR, Message: err.Error()})
+	}
+
+	if request.Username == share.Username {
+		return ctx.JSON(common_err.SUCCESS, model.Result{Success: common_err.SUCCESS, Message: common_err.GetMsg(common_err.SUCCESS), Data: share})
+	}
+
+	path, err := service.ValidateSharePath(share.Path)
+	if err != nil {
+		return ctx.JSON(common_err.CLIENT_ERROR, model.Result{Success: common_err.DIR_NOT_EXISTS, Message: err.Error()})
+	}
+
+	if request.Username != "" {
+		if err := service.ValidateSambaUsername(request.Username); err != nil {
+			return ctx.JSON(common_err.CLIENT_ERROR, model.Result{Success: common_err.CLIENT_ERROR, Message: err.Error()})
+		}
+
+		if _, err := user.Lookup(request.Username); err != nil {
+			return ctx.JSON(common_err.CLIENT_ERROR, model.Result{Success: common_err.USER_NOT_EXIST, Message: common_err.GetMsg(common_err.USER_NOT_EXIST)})
+		}
+	}
+
+	// Ownership moves first. If Samba then refuses the configuration the share
+	// keeps working as it did, and the directory is put back below.
+	if request.Username == "" {
+		err = releaseShareFromUser(path)
+	} else {
+		err = restrictShareToUser(path, request.Username)
+	}
+
+	if err != nil {
+		return ctx.JSON(common_err.SERVICE_ERROR, model.Result{Success: common_err.SERVICE_ERROR, Message: err.Error()})
+	}
+
+	if err := service.MyService.Shares().UpdateShareUsername(id, request.Username); err != nil {
+		if share.Username == "" {
+			_ = releaseShareFromUser(path)
+		} else {
+			_ = restrictShareToUser(path, share.Username)
+		}
+
+		return ctx.JSON(common_err.SERVICE_ERROR, model.Result{Success: common_err.SERVICE_ERROR, Message: err.Error()})
+	}
+
+	share.Username = request.Username
+	share.Anonymous = request.Username == ""
+
+	return ctx.JSON(common_err.SUCCESS, model.Result{Success: common_err.SUCCESS, Message: common_err.GetMsg(common_err.SUCCESS), Data: share})
+}
+
 func DeleteSambaShares(ctx echo.Context) error {
 	id := ctx.Param("id")
 	if id == "" {
