@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -19,35 +20,37 @@ const (
 
 // sambaSection renders one share as an smb.conf section.
 //
-// A share with no Username is written exactly as CasaOS has always written it:
-// guest accessible, world-writable, files forced to root. Every row that
-// predates authenticated shares carries an empty Username, so an upgrade leaves
-// those shares byte-identical.
+// A share with no Username is written exactly as CasaOS has always written it,
+// field for field and line for line. Every row predating authenticated shares
+// carries an empty Username, so an upgrade regenerates their sections unchanged.
 //
-// An authenticated share drops all three of those together. Leaving any single
-// one behind would make the authentication decorative: "guest ok" alone re-opens
-// the share, and "force user = root" alone hands every file back to root no
-// matter who connected.
+// An authenticated share drops the guest access, the world-writable masks and
+// the root ownership together. Leaving any single one behind would make the
+// authentication decorative: "guest ok" alone re-opens the share, and
+// "force user = root" alone hands every file back to root no matter who
+// connected.
 func sambaSection(share model2.SharesDBModel) string {
 	name := filepath.Base(share.Path)
 
-	section := "\n[" + name + "]\n" +
-		"comment = CasaOS share " + name + "\n" +
-		"path = " + share.Path + "\n" +
-		"browseable = Yes\n" +
-		"read only = No\n"
-
 	if share.Username == "" {
-		return section +
+		return "\n[" + name + "]\n" +
+			"comment = CasaOS share " + name + "\n" +
 			"public = Yes\n" +
+			"path = " + share.Path + "\n" +
+			"browseable = Yes\n" +
+			"read only = No\n" +
 			"guest ok = Yes\n" +
 			"create mask = 0777\n" +
 			"directory mask = 0777\n" +
 			"force user = root\n\n"
 	}
 
-	return section +
+	return "\n[" + name + "]\n" +
+		"comment = CasaOS share " + name + "\n" +
 		"public = No\n" +
+		"path = " + share.Path + "\n" +
+		"browseable = Yes\n" +
+		"read only = No\n" +
 		"guest ok = No\n" +
 		"valid users = " + share.Username + "\n" +
 		"create mask = 0660\n" +
@@ -79,29 +82,92 @@ func validateSambaConfig() error {
 	return nil
 }
 
-// migrateGuestMapping turns "map to guest = bad user" into "map to guest = never"
-// in an smb.conf CasaOS has already written.
+// syncGuestMapping keeps the global guest mapping in step with whether any share
+// is actually protected.
 //
-// InitSambaConfig only writes that file on a host that has never seen CasaOS, so
-// on every existing installation this is the only route by which the setting can
-// land. It matters because under "bad user" a client whose credentials are
-// refused is silently remapped to the guest account and receives ACCESS_DENIED
-// instead of being asked for a password: an authenticated share would look
-// broken rather than protected.
+// With a protected share present the setting has to be "never": under
+// "bad user" a client whose credentials are refused is silently remapped to the
+// guest account and receives ACCESS_DENIED instead of being asked for a
+// password, so a protected share looks broken rather than protected.
 //
-// Only that one line is rewritten. Regenerating the file would discard the hand
-// edits users made while working around the absence of authentication, which the
-// upstream issue thread is full of.
-func migrateGuestMapping() error {
+// With no protected share it has to go back to "bad user". Windows sends the
+// logged-in account name whether or not the share wants one, and under "never"
+// that unknown name is refused outright instead of falling back to guest, which
+// would break the plain guest shares people have always used.
+//
+// Only that one line is rewritten, on an smb.conf CasaOS has already written.
+// InitSambaConfig returns early on such hosts, so this is the only route by
+// which the setting can reach an existing installation, and regenerating the
+// whole file would discard the hand edits the upstream issue thread is full of.
+func syncGuestMapping(hasProtectedShare bool) error {
 	content, err := os.ReadFile(sambaConfigFile)
 	if err != nil {
 		return err
 	}
 
-	updated := strings.ReplaceAll(string(content), "map to guest = bad user", "map to guest = never")
+	from, to := "map to guest = never", "map to guest = bad user"
+	if hasProtectedShare {
+		from, to = to, from
+	}
+
+	updated := strings.ReplaceAll(string(content), from, to)
 	if updated == string(content) {
 		return nil
 	}
 
 	return os.WriteFile(sambaConfigFile, []byte(updated), 0o644)
+}
+
+// shareRoots are the directories a share may live under.
+//
+// Sharing a folder changes its ownership and permissions as root, on a path the
+// caller supplies. Without a boundary that is a primitive for handing any
+// directory on the host to an arbitrary account, so the API is confined to the
+// places a network share plausibly belongs: CasaOS storage and the usual mount
+// points for external media.
+var shareRoots = []string{
+	"/DATA",
+	"/var/lib/casaos/files",
+	"/mnt",
+	"/media",
+	"/srv",
+}
+
+var (
+	ErrSharePathNotDirectory = errors.New("only a directory can be shared")
+	ErrSharePathOutsideRoots = errors.New("a share must live under /DATA, /mnt, /media or /srv")
+)
+
+// ValidateSharePath resolves path and reports whether it is a real directory
+// inside one of the permitted roots.
+//
+// Symlinks are resolved before the check rather than after, so a link planted
+// inside a share cannot be used to reach a target outside it.
+func ValidateSharePath(path string) (string, error) {
+	resolved, err := filepath.EvalSymlinks(path)
+	if err != nil {
+		return "", err
+	}
+
+	resolved, err = filepath.Abs(resolved)
+	if err != nil {
+		return "", err
+	}
+
+	info, err := os.Lstat(resolved)
+	if err != nil {
+		return "", err
+	}
+
+	if !info.IsDir() {
+		return "", ErrSharePathNotDirectory
+	}
+
+	for _, root := range shareRoots {
+		if resolved == root || strings.HasPrefix(resolved, root+string(os.PathSeparator)) {
+			return resolved, nil
+		}
+	}
+
+	return "", ErrSharePathOutsideRoots
 }

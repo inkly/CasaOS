@@ -75,6 +75,8 @@ func GetSambaSharesList(ctx echo.Context) error {
 // Without this the directory stays root-owned, while the Samba session runs as
 // that account: the share would authenticate correctly and then refuse every
 // write, which reads as a broken feature rather than a permissions problem.
+//
+// path must already have been through service.ValidateSharePath.
 func restrictShareToUser(path, username string) error {
 	account, err := user.Lookup(username)
 	if err != nil {
@@ -98,60 +100,96 @@ func restrictShareToUser(path, username string) error {
 	return os.Chmod(path, 0o770)
 }
 
+// releaseShareFromUser gives a directory back to root when its share goes away.
+//
+// Leaving it owned by a share account would keep that account in control of the
+// folder long after the share, and the account itself, are gone.
+func releaseShareFromUser(path string) error {
+	if _, err := service.ValidateSharePath(path); err != nil {
+		return err
+	}
+
+	if err := os.Chown(path, 0, 0); err != nil {
+		return err
+	}
+
+	return os.Chmod(path, 0o755)
+}
+
 func PostSambaSharesCreate(ctx echo.Context) error {
 	shares := []model.Shares{}
 	if err := ctx.Bind(&shares); err != nil {
 		return ctx.JSON(common_err.CLIENT_ERROR, model.Result{Success: common_err.CLIENT_ERROR, Message: err.Error()})
 	}
 
-	for _, v := range shares {
+	// Sections in smb.casa.conf are named after the directory. smbd merges a
+	// repeated section into the first one, so a second share with the same
+	// basename silently disappears. The database checks below cannot see the
+	// other entries of this same request, hence the local set.
+	requested := map[string]bool{}
+	resolved := make([]string, len(shares))
+
+	for i, v := range shares {
 		if v.Path == "" {
 			return ctx.JSON(common_err.CLIENT_ERROR, model.Result{Success: common_err.INSUFFICIENT_PERMISSIONS, Message: common_err.GetMsg(common_err.INSUFFICIENT_PERMISSIONS)})
 		}
-		if !file.Exists(v.Path) {
-			return ctx.JSON(common_err.SERVICE_ERROR, model.Result{Success: common_err.DIR_NOT_EXISTS, Message: common_err.GetMsg(common_err.DIR_NOT_EXISTS)})
+
+		// Sharing a folder changes its ownership and permissions as root, so the
+		// path is confined before anything touches it.
+		path, err := service.ValidateSharePath(v.Path)
+		if err != nil {
+			return ctx.JSON(common_err.CLIENT_ERROR, model.Result{Success: common_err.DIR_NOT_EXISTS, Message: err.Error()})
 		}
-		if len(service.MyService.Shares().GetSharesByPath(v.Path)) > 0 {
-			return ctx.JSON(common_err.CLIENT_ERROR, model.Result{Success: common_err.SHARE_ALREADY_EXISTS, Message: common_err.GetMsg(common_err.SHARE_ALREADY_EXISTS)})
-		}
-		// Sections in smb.casa.conf are named after the directory, and smbd keeps
-		// only the first of two sections sharing a name. This used to query the
-		// path column with a bare basename, so it never matched and the second
-		// share silently vanished from the generated file.
-		if len(service.MyService.Shares().GetSharesByName(filepath.Base(v.Path))) > 0 {
+
+		resolved[i] = path
+		name := filepath.Base(path)
+
+		if requested[name] {
 			return ctx.JSON(common_err.CLIENT_ERROR, model.Result{Success: common_err.SHARE_NAME_ALREADY_EXISTS, Message: common_err.GetMsg(common_err.SHARE_NAME_ALREADY_EXISTS)})
 		}
 
-		// A share the client asked to protect needs an account to protect it with,
-		// and that account must already exist. Creating one here would mean
-		// inventing a password nobody was ever told.
-		if !v.Anonymous {
+		requested[name] = true
+
+		if len(service.MyService.Shares().GetSharesByPath(path)) > 0 {
+			return ctx.JSON(common_err.CLIENT_ERROR, model.Result{Success: common_err.SHARE_ALREADY_EXISTS, Message: common_err.GetMsg(common_err.SHARE_ALREADY_EXISTS)})
+		}
+
+		// This used to query the path column with a bare basename, so it never
+		// matched and the duplicate-name error was unreachable.
+		if len(service.MyService.Shares().GetSharesByName(name)) > 0 {
+			return ctx.JSON(common_err.CLIENT_ERROR, model.Result{Success: common_err.SHARE_NAME_ALREADY_EXISTS, Message: common_err.GetMsg(common_err.SHARE_NAME_ALREADY_EXISTS)})
+		}
+
+		// A share is protected when it names an account, not when a boolean says
+		// so. Clients that predate this field omit it and keep getting the guest
+		// share they have always got.
+		if v.Username != "" {
 			if err := service.ValidateSambaUsername(v.Username); err != nil {
 				return ctx.JSON(common_err.CLIENT_ERROR, model.Result{Success: common_err.CLIENT_ERROR, Message: err.Error()})
 			}
+
 			if _, err := user.Lookup(v.Username); err != nil {
 				return ctx.JSON(common_err.CLIENT_ERROR, model.Result{Success: common_err.USER_NOT_EXIST, Message: common_err.GetMsg(common_err.USER_NOT_EXIST)})
 			}
 		}
 	}
 
-	for _, v := range shares {
+	for i, v := range shares {
+		path := resolved[i]
+
 		shareDBModel := model2.SharesDBModel{
-			Anonymous: v.Anonymous,
-			Path:      v.Path,
-			Name:      filepath.Base(v.Path),
+			Anonymous: v.Username == "",
+			Username:  v.Username,
+			Path:      path,
+			Name:      filepath.Base(path),
 		}
 
-		if v.Anonymous {
+		if v.Username == "" {
 			// Unchanged from before authenticated shares existed: a guest share has
 			// no owner to speak of, so the directory stays world-writable.
-			os.Chmod(v.Path, 0o777)
-		} else {
-			shareDBModel.Username = v.Username
-
-			if err := restrictShareToUser(v.Path, v.Username); err != nil {
-				return ctx.JSON(common_err.SERVICE_ERROR, model.Result{Success: common_err.SERVICE_ERROR, Message: err.Error()})
-			}
+			os.Chmod(path, 0o777)
+		} else if err := restrictShareToUser(path, v.Username); err != nil {
+			return ctx.JSON(common_err.SERVICE_ERROR, model.Result{Success: common_err.SERVICE_ERROR, Message: err.Error()})
 		}
 
 		if err := service.MyService.Shares().CreateShare(shareDBModel); err != nil {
@@ -167,6 +205,14 @@ func DeleteSambaShares(ctx echo.Context) error {
 	if id == "" {
 		return ctx.JSON(common_err.CLIENT_ERROR, model.Result{Success: common_err.INSUFFICIENT_PERMISSIONS, Message: common_err.GetMsg(common_err.INSUFFICIENT_PERMISSIONS)})
 	}
+	for _, share := range service.MyService.Shares().GetSharesList() {
+		if strconv.FormatUint(uint64(share.ID), 10) == id && share.Username != "" {
+			if err := releaseShareFromUser(share.Path); err != nil {
+				return ctx.JSON(common_err.SERVICE_ERROR, model.Result{Success: common_err.SERVICE_ERROR, Message: err.Error()})
+			}
+		}
+	}
+
 	if err := service.MyService.Shares().DeleteShare(id); err != nil {
 		return ctx.JSON(common_err.SERVICE_ERROR, model.Result{Success: common_err.SERVICE_ERROR, Message: err.Error()})
 	}

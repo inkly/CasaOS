@@ -25,9 +25,12 @@ func TestSkipJWT(t *testing.T) {
 		{"samba account creation is not trusted from loopback", "/v1/samba/users", "::1", false},
 		{"samba password change is not trusted from loopback", "/v1/samba/users/alice/password", "127.0.0.1", false},
 
-		// Shares themselves are not privileged in the same way and keep the
-		// existing loopback behaviour.
-		{"listing shares keeps the loopback exemption", "/v1/samba/shares", "127.0.0.1", true},
+		// Creating a share chowns and chmods a caller-supplied directory as root,
+		// so the share routes are privileged too. Exempting them would hand any
+		// local process an unauthenticated chown of an arbitrary path.
+		{"creating a share is not trusted from loopback", "/v1/samba/shares", "127.0.0.1", false},
+		{"deleting a share is not trusted from loopback", "/v1/samba/shares/1", "::1", false},
+		{"samba client connections are not trusted from loopback", "/v1/samba/connections", "127.0.0.1", false},
 
 		// A shorter path that merely resembles the prefix stays trusted.
 		{"a similarly named route keeps the loopback exemption", "/v1/sys/package", "127.0.0.1", true},

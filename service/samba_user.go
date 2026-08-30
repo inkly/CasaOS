@@ -137,6 +137,12 @@ func SetSambaPassword(username, password string) error {
 		return ErrSambaPasswordEmpty
 	}
 
+	// Without this the endpoint would happily enrol root, or any other existing
+	// system account, into Samba with a password the caller chose.
+	if !isCasaOSManagedAccount(username) {
+		return ErrSambaUserNotManaged
+	}
+
 	// -s reads the password twice from stdin instead of prompting, and -a is a
 	// no-op for an account smbpasswd already knows.
 	cmd := exec.Command("smbpasswd", "-s", "-a", username)

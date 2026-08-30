@@ -62,10 +62,22 @@ func (s *sharesStruct) GetSharesList() (shares []model2.SharesDBModel) {
 }
 
 func (s *sharesStruct) CreateShare(share model2.SharesDBModel) error {
-	s.db.Create(&share)
 	s.InitSambaConfig()
 
-	return s.UpdateConfigFile()
+	// Write and validate the configuration this share would produce before the
+	// row is committed. Inserting first would leave an unusable row behind when
+	// Samba rejects the result, and every later share operation would then fail
+	// on that same row.
+	shares := []model2.SharesDBModel{}
+	s.db.Find(&shares)
+
+	if err := s.applyConfig(append(shares, share)); err != nil {
+		return err
+	}
+
+	s.db.Create(&share)
+
+	return nil
 }
 
 func (s *sharesStruct) DeleteShare(id string) error {
@@ -78,20 +90,43 @@ func (s *sharesStruct) UpdateConfigFile() error {
 	shares := []model2.SharesDBModel{}
 	s.db.Find(&shares)
 
+	return s.applyConfig(shares)
+}
+
+// applyConfig writes the share configuration, has Samba check it, and restarts
+// smbd only once it has been accepted.
+func (s *sharesStruct) applyConfig(shares []model2.SharesDBModel) error {
 	configStr := ""
+	hasProtectedShare := false
+
 	for _, share := range shares {
 		configStr += sambaSection(share)
+
+		if share.Username != "" {
+			hasProtectedShare = true
+		}
+	}
+
+	if err := syncGuestMapping(hasProtectedShare); err != nil {
+		logger.Error("failed to update the samba guest mapping", zap.Error(err))
 	}
 
 	previous, previousErr := os.ReadFile(sambaShareConfigFile)
 
-	file.WriteToPath([]byte(configStr), sambaConfigDir, sambaShareConfigName)
+	if err := file.WriteToPath([]byte(configStr), sambaConfigDir, sambaShareConfigName); err != nil {
+		return err
+	}
 
 	if err := validateSambaConfig(); err != nil {
-		// Put the working configuration back rather than leaving smbd pointed at
-		// a file it will refuse on its next restart.
+		// Leave smbd pointed at something it will accept. With no previous file
+		// to restore, removing ours is the correct undo: smb.conf includes it,
+		// and Samba ignores an include that does not exist.
 		if previousErr == nil {
-			file.WriteToPath(previous, sambaConfigDir, sambaShareConfigName)
+			if restoreErr := file.WriteToPath(previous, sambaConfigDir, sambaShareConfigName); restoreErr != nil {
+				logger.Error("failed to restore the previous share configuration", zap.Error(restoreErr))
+			}
+		} else if removeErr := os.Remove(sambaShareConfigFile); removeErr != nil {
+			logger.Error("failed to remove the rejected share configuration", zap.Error(removeErr))
 		}
 
 		return err
@@ -107,10 +142,8 @@ func (s *sharesStruct) InitSambaConfig() {
 	if file.Exists(sambaConfigFile) {
 		str := file.ReadLine(1, sambaConfigFile)
 		if strings.Contains(str, "# Copyright (c) 2021-2022 CasaOS Inc. All rights reserved.") {
-			if err := migrateGuestMapping(); err != nil {
-				logger.Error("failed to update the samba guest mapping", zap.Error(err))
-			}
-
+			// The guest mapping of an already-configured host is kept in step by
+			// applyConfig, which knows whether any share is actually protected.
 			return
 		}
 		file.MoveFile("/etc/samba/smb.conf", "/etc/samba/smb.conf.bak")
