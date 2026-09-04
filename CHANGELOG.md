@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- [Updater] The in-app updater pointed at another fork's release feed. Four shipped files still carried `alvins82/CasaOS-Install` URLs, and one of them — the setup script packaged into the installer's compatibility overlay — wrote them into `/etc/casaos/casaos.conf` on every install and upgrade, where the Go resolvers prefer them over this distribution's built-in URLs. An installed host therefore polled a feed whose latest release is older than what it was running, reported itself up to date forever, and would have fetched the other fork's `install.sh` had the update ever fired. Existing installations need one manual re-run of the install command (`curl -fsSL https://github.com/inkly/CasaOS-Install/releases/latest/download/install.sh | sudo bash`) to pick this up; after that the dashboard updater tracks this distribution on its own.
+
 ## [0.4.41] - 2026-09-04
 
 ### Added

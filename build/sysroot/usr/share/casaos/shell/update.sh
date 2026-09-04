@@ -9,4 +9,4 @@
 ### 
 
 
-curl -fsSL https://github.com/alvins82/CasaOS-Install/releases/latest/download/install.sh | bash
+curl -fsSL https://github.com/inkly/CasaOS-Install/releases/latest/download/install.sh | bash
