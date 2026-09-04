@@ -3,6 +3,7 @@ package version
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/IceWhaleTech/CasaOS/common"
@@ -34,15 +35,19 @@ func TestIsVersionNewer(t *testing.T) {
 }
 
 func TestCurrentVersionFromFile(t *testing.T) {
+	// The version is reported without the "v" of the release tag: the dashboard
+	// prefixes it itself, and both sources below hold the tag verbatim.
+	fallback := strings.TrimPrefix(common.FORK_RELEASE_VERSION, "v")
+
 	versionFile := filepath.Join(t.TempDir(), "fork-release")
-	if got := currentVersionFromFile(versionFile); got != common.FORK_RELEASE_VERSION {
-		t.Fatalf("missing version file returned %q", got)
+	if got := currentVersionFromFile(versionFile); got != fallback {
+		t.Fatalf("missing version file returned %q, want %q", got, fallback)
 	}
 
 	if err := os.WriteFile(versionFile, []byte("v0.4.20\n"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	if got := currentVersionFromFile(versionFile); got != "v0.4.20" {
+	if got := currentVersionFromFile(versionFile); got != "0.4.20" {
 		t.Fatalf("installed version returned %q", got)
 	}
 }

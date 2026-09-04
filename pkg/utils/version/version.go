@@ -71,13 +71,17 @@ func CurrentVersion() string {
 }
 
 func currentVersionFromFile(path string) string {
-	data, err := os.ReadFile(path)
-	if err == nil {
+	// Both sources hold the release tag, "v" included: the installer writes it
+	// to FORK_RELEASE_FILE and FORK_RELEASE_VERSION carries the same string.
+	// The API answers a bare version - the dashboard adds the "v" itself, so
+	// the tag's own prefix showed up as "vv0.4.40".
+	version := common.FORK_RELEASE_VERSION
+	if data, err := os.ReadFile(path); err == nil {
 		if installedVersion := strings.TrimSpace(string(data)); installedVersion != "" {
-			return installedVersion
+			version = installedVersion
 		}
 	}
-	return common.FORK_RELEASE_VERSION
+	return strings.TrimPrefix(version, "v")
 }
 
 func IsNeedUpdate(version model.Version) (bool, model.Version) {
