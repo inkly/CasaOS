@@ -16,13 +16,18 @@ import (
 )
 
 // rootPrivilegedRoutePrefixes covers the routes that act on the host as root:
-// installing operating system packages, and creating or removing the system
-// accounts that protect Samba shares.
+// installing operating system packages, creating or removing the system
+// accounts that protect Samba shares, and the file manager.
 var rootPrivilegedRoutePrefixes = []string{
 	"/v1/sys/packages",
 	// The whole samba family, not just account management: creating a share
 	// changes ownership and permissions of a caller-supplied directory as root.
 	"/v1/samba",
+	// The file manager reads, writes and deletes caller-supplied absolute paths as root.
+	"/v1/file",
+	"/v1/folder",
+	"/v1/batch",
+	"/v1/image",
 }
 
 // skipJWT reports whether the JWT check can be skipped for a request.

@@ -32,6 +32,15 @@ func TestSkipJWT(t *testing.T) {
 		{"deleting a share is not trusted from loopback", "/v1/samba/shares/1", "::1", false},
 		{"samba client connections are not trusted from loopback", "/v1/samba/connections", "127.0.0.1", false},
 
+		// The file manager reads, writes and deletes caller-supplied absolute
+		// paths as root, which is strictly more than the samba routes do, so it
+		// needs a token from loopback too.
+		{"file content is not trusted from loopback", "/v1/file/content", "127.0.0.1", false},
+		{"file websocket is not trusted from loopback", "/v1/file/ws", "::1", false},
+		{"folder listing is not trusted from loopback", "/v1/folder", "127.0.0.1", false},
+		{"batch delete is not trusted from loopback", "/v1/batch", "::1", false},
+		{"thumbnail is not trusted from loopback", "/v1/image", "127.0.0.1", false},
+
 		// A shorter path that merely resembles the prefix stays trusted.
 		{"a similarly named route keeps the loopback exemption", "/v1/sys/package", "127.0.0.1", true},
 		// Anything under the prefix fails closed, even an unknown suffix.
