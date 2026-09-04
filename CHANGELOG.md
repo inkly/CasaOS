@@ -16,6 +16,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## [0.4.40] - 2026-09-04
+
+First release of the inkly distribution, cut from alvins82's v0.4.28.
+
+### Added
+
+- [Sharing] Restrict a Samba share to a dedicated account. Accounts are created through the API, are separate from the CasaOS login, have no shell and cannot log in to the host. Shares convert between guest and account access in place ([CasaOS #33](https://github.com/alvins82/CasaOS/pull/33)).
+- [Sharing] `map to guest = never` when a protected share exists, and patched in place on hosts CasaOS already configured, so a rejected login prompts for a password instead of failing silently.
+- [Sharing] The generated Samba configuration is checked with `testparm` before smbd is restarted, and rolled back if rejected; a bad configuration used to take network discovery down with it ([CasaOS #33](https://github.com/alvins82/CasaOS/pull/33)).
+
+### Changed
+
+- [Build] `.goreleaser.yaml` publishes to `inkly` instead of upstream; the UI submodule follows `inkly/CasaOS-UI`; the in-app updater follows `inkly/CasaOS-Install` releases.
+- [Build] Eight inherited workflows that pushed to IceWhale infrastructure or needed its secrets are removed. `codecov.yml` and `release.yml` stay.
+
+### Fixed
+
+- [Sharing] Share paths are confined to the data roots and resolved through symlinks before any ownership change ([CasaOS #33](https://github.com/alvins82/CasaOS/pull/33)).
+- [Sharing] The duplicate-name check queried the path column with a basename and never matched; a second share with the same folder name silently vanished from the generated configuration.
+
+### Security
+
+- [API] Routes that act as root on the host — system package updates, Samba accounts, share creation — require a token even from loopback. Any local process, including a container on the host network, could reach them without one ([CasaOS #32](https://github.com/alvins82/CasaOS/pull/32), [CasaOS #33](https://github.com/alvins82/CasaOS/pull/33)).
+
 ## [0.4.28] - 2026-08-15
 
 ### Changed

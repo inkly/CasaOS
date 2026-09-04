@@ -1,99 +1,91 @@
-# CasaOS - Your Personal Cloud 
-<!-- Readme i18n links -->
-<!-- > English | [中文](#) | [Français](#) -->
+# CasaOS
+
+A personal cloud for the home: a dashboard, an app store, Docker apps, files and shares on your own hardware. This repository is the core service of the **inkly distribution of CasaOS**, a maintained release of the project after upstream [IceWhaleTech/CasaOS](https://github.com/IceWhaleTech/CasaOS) stopped shipping in 2025.
 
 <p align="center">
-    <!-- CasaOS Banner -->
-    <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/IceWhaleTech/logo/main/casaos/casaos_banner_dark_night_800x300.png">
-        <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/IceWhaleTech/logo/main/casaos/casaos_banner_twilight_blue_800x300.png">
-        <img alt="CasaOS" src="https://raw.githubusercontent.com/IceWhaleTech/logo/main/casaos/casaos_banner_twilight_blue_800x300.png">
-    </picture>
-    <br/>
-    <i>Connect with the community, establish autonomy, reduce the cost of SaaS, and MAXIMIZE the potential for a personalized copilot.</i>
-    <br/>
-    <br/>
-    <!-- CasaOS Badges -->
-    <a href="https://github.com/IceWhaleTech/CasaOS" target="_blank">
-        <img alt="CasaOS Version" src="https://img.shields.io/github/v/release/IceWhaleTech/CasaOS?color=162453&style=flat-square&label=CasaOS" />
-    </a>
-    <a href="https://github.com/IceWhaleTech/CasaOS/blob/main/LICENSE" target="_blank">
-        <img alt="CasaOS License" src="https://img.shields.io/github/license/IceWhaleTech/CasaOS?color=162453&style=flat-square&label=License" />
-    </a>
-    <a href="https://github.com/IceWhaleTech/CasaOS/pulls" target="_blank">
-        <img alt="CasaOS Pull Requests" src="https://img.shields.io/github/issues-pr/IceWhaleTech/CasaOS?color=162453&style=flat-square&label=PRs" />
-    </a>
-    <a href="https://github.com/IceWhaleTech/CasaOS/issues" target="_blank">
-        <img alt="CasaOS Issues" src="https://img.shields.io/github/issues/IceWhaleTech/CasaOS?color=162453&style=flat-square&label=Issues" />
-    </a>
-    <a href="https://codecov.io/gh/IceWhaleTech/CasaOS" > 
-    <img src="https://codecov.io/gh/IceWhaleTech/CasaOS/branch/main/graph/badge.svg?token=l9uMKGlkxM"/> 
-    </a>
-    <a href="https://github.com/IceWhaleTech/CasaOS/stargazers" target="_blank">
-        <img alt="CasaOS Stargazers" src="https://img.shields.io/github/stars/IceWhaleTech/CasaOS?color=162453&style=flat-square&label=Stars" />
-    </a>
-    <!-- <a href="https://github.com/IceWhaleTech/CasaOS/releases" target="_blank">
-    <img alt="CasaOS Downloads" src="https://img.shields.io/github/downloads/IceWhaleTech/CasaOS/total?color=162453&style=flat-square" />
-    </a> -->
-    <br/>
-    <!-- CasaOS Community -->
-    <a href="https://discord.gg/knqAbbBbeX" target="_blank">
-        <img alt="IceWhale Discord" src="https://img.shields.io/discord/884667213326463016?color=162453&style=flat-square&label=Discord&logo=discord&logoColor=fff" />
-    </a>
-    <a href="https://github.com/IceWhaleTech/CasaOS/discussions" target="_blank">
-        <img alt="CasaOS GitHub Discussions" src="https://img.shields.io/github/discussions/IceWhaleTech/CasaOS?color=162453&style=flat-square&label=Discussions&logo=github" />
-    </a>
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-    <a href="#credits">
-        <img alt="All Contributors" src="https://img.shields.io/static/v1?label=All%20Contributors&message=15&color=162453&style=flat-square&logo=Handshake&logoColor=fff" />
-    </a>
-    <!-- CasaOS YouTube -->
-    <a href="https://www.youtube.com/channel/UC2zMrUYT17AJhIl9XWZzT8g" target="_blank">
-        <img alt="YouTube Tutorial Views" src="https://img.shields.io/youtube/channel/views/UC2zMrUYT17AJhIl9XWZzT8g?style=flat-square&logo=youtube&logoColor=red&label=YouTube%20Tutorial%20Views" />
-    </a>
-    <br/>    
-    <a href="http://bit.ly/45JQIiL" target="_blank">
-        <img alt="twitter ZimaSpace" src="https://img.shields.io/twitter/follow/ZimaSpace?style=flat-square&logo=X&label=Contact%20Us%20%40%20ZimaSpace&labelColor=555&color=555" />
-    </a>
-    <a href="http://bit.ly/4lgHj7V" target="_blank">
-        <img alt="facebook ZimaSpace" src="https://img.shields.io/badge/ZimaSpace-1877F2?style=flat-square&logo=Facebook&logoColor=fff&label=Contact%20Us&labelColor=555&color=162453" />
-    </a>
-    <br/>
-    <!-- CasaOS Links -->
-    <a href="https://www.casaos.io" target="_blank">Website</a> |
-    <a href="http://demo.casaos.io" target="_blank">Demo</a> |
-    <a href="https://github.com/IceWhaleTech/CasaOS" target="_blank">GitHub</a>
-    <br/>
-    <br/>
-    <!-- CasaOS Snapshots -->
+    <a href="https://github.com/inkly/CasaOS-Install/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/inkly/CasaOS-Install?color=162453&style=flat-square&label=Distribution" /></a>
+    <a href="https://github.com/inkly/CasaOS/blob/main/LICENSE"><img alt="Licence" src="https://img.shields.io/github/license/inkly/CasaOS?color=162453&style=flat-square&label=License" /></a>
+    <a href="https://github.com/inkly/CasaOS/issues"><img alt="Issues" src="https://img.shields.io/github/issues/inkly/CasaOS?color=162453&style=flat-square&label=Issues" /></a>
+    <a href="https://github.com/inkly/CasaOS/pulls"><img alt="Pull requests" src="https://img.shields.io/github/issues-pr/inkly/CasaOS?color=162453&style=flat-square&label=PRs" /></a>
+    <br/><br/>
     <kbd>
       <picture>
           <source media="(prefers-color-scheme: dark)" srcset="snapshot-dark.jpg">
           <source media="(prefers-color-scheme: light)" srcset="snapshot-light.jpg">
-          <img alt="CasaOS Snapshot" src="snapshot-light.jpg">
+          <img alt="CasaOS dashboard" src="snapshot-light.jpg">
       </picture>
     </kbd>
 </p>
 
-## Migrate from official CasaOS
-
-If CasaOS was installed from IceWhale's official installer, you can migrate to the latest release of this fork in place. Run the command from an SSH session or a directly attached terminal; do not uninstall CasaOS first.
+## Install
 
 ```sh
-curl -fsSL https://github.com/alvins82/CasaOS-Install/releases/latest/download/install.sh | sudo bash
+curl -fsSL https://github.com/inkly/CasaOS-Install/releases/latest/download/install.sh | sudo bash
 ```
 
-The installer stops and restarts CasaOS services while upgrading, so back up important data first. After it finishes, verify the installed fork release with:
+One command for every supported system and architecture; the installer detects both at run time. Run it again to upgrade, or use the update button in the dashboard, which follows this distribution's releases.
+
+**Migrating from IceWhale's or alvins82's installer** works the same way, in place, without uninstalling first. The installer stops and restarts the CasaOS services while upgrading, so back up what matters. Afterwards, `cat /var/lib/casaos/fork-release` prints the distribution release installed — `v0.4.40` for the current one. Do not use `get.casaos.io/update` after migrating: it installs IceWhale's frozen component bundle over this one.
+
+Everything the installer downloads is verified against a SHA-256 digest before extraction. What is in each release, and how a release is built, is described in [CasaOS-Install](https://github.com/inkly/CasaOS-Install#readme).
+
+### Compatibility
+
+Architectures: amd64, arm64, armv7.
+
+Tested: Debian 12, Ubuntu Server 20.04 and 26.04, Raspberry Pi OS. Reported working by the community: Elementary 6.1, Armbian 22.04. Not fully tested: Alpine, OpenWrt, Arch.
+
+Docker 24 through 29 are supported. The Docker 29 incompatibility that broke the upstream release is fixed here, without the `DOCKER_MIN_API_VERSION` workaround.
+
+### Uninstall
 
 ```sh
-cat /var/lib/casaos/fork-release
+sudo casaos-uninstall
 ```
 
-The command should print the fork release tag installed on the system, such as `v0.4.35` for the current release.
+## What this distribution changes
 
-Future updates can be installed from the CasaOS dashboard or by running the same command again. Do not use `get.casaos.io/update` after migrating, because it installs IceWhale's upstream component bundle.
+Relative to upstream, through alvins82's fork and then here. The full list per release is in [CHANGELOG.md](CHANGELOG.md).
 
-## Fork Changelog
+- **Sharing** — Samba shares can be restricted to an account, managed from the dashboard and separate from the CasaOS login; shares convert between guest and account access in place. Upstream shares were world-writable, with files created as root, and Windows 10 and 11 refuse guest SMB entirely. Hosts advertise themselves over mDNS and Windows discovery without SMB1.
+- **Apps** — The `docker-compose.yml` of an installed app is editable from its settings, with validation before apply. Apps open inside CasaOS or in a new tab, per app. System package updates run from the dashboard.
+- **Storage** — External disks form the merged `/DATA` while the system disk stays out of it; volumes can be renamed; merge mounts are restored across reboots and slow disks.
+- **Network** — The gateway serves HTTPS with a certificate you supply.
+- **Security** — Routes that act as root on the host require a token even from loopback. The dashboard no longer sends a machine fingerprint to a third party.
+- **Platform** — Docker 29 and Ubuntu 26 support; every component is built and released from CI, with digests published alongside.
+
+## Features
+
+- A dashboard designed for the home: no forms, no configuration files to learn
+- An app store with one-click installs — Nextcloud, Home Assistant, AdGuard, Jellyfin, the *arr stack and more — and any Docker image beyond it
+- File management and network shares that need no technical background
+- Widgets for what you care about: resource usage, app status, storage
+
+## Community and contributing
+
+Bug reports and requests go to [issues on this repository](https://github.com/inkly/CasaOS/issues), whichever component is involved. Pull requests are welcome on any of the component repositories under [inkly](https://github.com/inkly?tab=repositories&q=CasaOS); each has its own release workflow, and the installer pins them.
+
+The upstream Discord, wiki and website belong to IceWhale and are not run by this distribution.
+
+## Repositories
+
+| Repository | Role |
+|---|---|
+| [CasaOS](https://github.com/inkly/CasaOS) | this one: system API, files, shares, updater |
+| [CasaOS-UI](https://github.com/inkly/CasaOS-UI) | the dashboard (a submodule here) |
+| [CasaOS-AppManagement](https://github.com/inkly/CasaOS-AppManagement) | apps, Compose, the app store client |
+| [CasaOS-Gateway](https://github.com/inkly/CasaOS-Gateway) | reverse proxy in front of every service |
+| [CasaOS-UserService](https://github.com/inkly/CasaOS-UserService) | accounts and login |
+| [CasaOS-MessageBus](https://github.com/inkly/CasaOS-MessageBus) | events between services |
+| [CasaOS-LocalStorage](https://github.com/inkly/CasaOS-LocalStorage) | disks, volumes, merged storage |
+| [CasaOS-Install](https://github.com/inkly/CasaOS-Install) | the installer and the release bundle |
+
+## History
+
+CasaOS was created by IceWhale as the pre-installed system of the ZimaBoard. Upstream development moved to their proprietary ZimaOS and the open-source project stopped receiving releases in 2025. [alvins82](https://github.com/alvins82/CasaOS) kept it installable — Docker 29, Ubuntu 26, merged storage fixes, SMB discovery — and this distribution started from his v0.4.39 in September 2026, adding the changes above and a release process that no longer depends on a workstation.
+
+<details>
+<summary>alvins82's fork changelog (August 2026)</summary>
 
 - **2026-08-15 — [CasaOS Install v0.4.35](https://github.com/alvins82/CasaOS-Install/releases/tag/v0.4.35):** Superseded v0.4.34 with exact 64-character SHA-256 values for every architecture, correcting the amd64 and arm/v7 AppManagement package checksums.
 - **2026-08-15 — [CasaOS Install v0.4.34](https://github.com/alvins82/CasaOS-Install/releases/tag/v0.4.34):** Corrected the installer SHA-256 values for the fork packages after v0.4.33 upgrades stopped during checksum verification, and republished the compatibility overlay with the matching release marker.
@@ -122,129 +114,11 @@ Future updates can be installed from the CasaOS dashboard or by running the same
 - **2026-08-11 — [v0.4.17-ubuntu26.3](https://github.com/alvins82/CasaOS-Install/releases/tag/v0.4.17-ubuntu26.3):** Routed dashboard update discovery and installation through CasaOS-Install releases so upstream updates cannot replace fork patches. PRs: [CasaOS #7](https://github.com/alvins82/CasaOS/pull/7), [installer #8](https://github.com/alvins82/CasaOS-Install/pull/8).
 - **2026-08-11 — [v0.4.17-ubuntu26.2](https://github.com/alvins82/CasaOS-Install/releases/tag/v0.4.17-ubuntu26.2):** Added Ubuntu 26.04 and Docker 24–29 compatibility, multi-architecture patched components, clean-install and reboot validation, and a single-command installer. PRs: [CasaOS #1](https://github.com/alvins82/CasaOS/pull/1), [AppManagement #1](https://github.com/alvins82/CasaOS-AppManagement/pull/1), [installer #2](https://github.com/alvins82/CasaOS-Install/pull/2).
 
-## Why do you need Personal Cloud?
+</details>
 
-In 2020, the team noticed three important trends:
-- The cost of computing power and storage was decreasing fast.
-- A part of cloud computing was moving towards edge computing.
-- The issue of consumer data asset ownership and attribution had been ignored.
+## Upstream credits
 
-Based on these trends, the team proposed a thought experiment internally: what if personal clouds were available under $100 in next five years? This personal cloud would provide a low-cost data collaboration solution as a personal data center, storing and managing data for creators and small organizations. A distributed collaborative computing network can be formed by personal servers located around the world. It could also control and connect all smart devices, providing cross-ecosystem local intelligent services.
-
-Furthermore, the personal cloud could combine personal data to train personalized AI assistants. The idea is that this technology would be an effective way to solve the issue of consumer data asset ownership and , as well as provide a more affordable and efficient computing solution for individuals and small organizations.
-
-> If you think what we are doing is valuable. Please **give us a star ⭐** and **fork it 🤞**!
-
-## Features
-
-- Friendly UI designed for home scenarios
-  - No code, no forms, intuitive, design for humanity
-- Multiple hardware and base system support
-  - ZimaBoard, NUC, RPi, old computers, whatever is available.
-- Selected apps in the app store, one-click installation
-  - Nextcloud, HomeAssistant, AdGuard, Jellyfin, *arr and more!
-- Easily install numerous Docker apps
-  - Over 100,000 apps from the Docker ecosystem can be easily installed
-- Elegant drive and file management
-  - What you see is what you get. No technical background required.
-- Well-designed system/app widgets
-  - What you care about, at a glance. Resource usage, app status, and more!
-
-## Getting Started
-
-CasaOS fully supports ZimaBoard, Intel NUC, and Raspberry Pi. Also, more computers and development boards and fully compatible with Ubuntu, Debian, Raspberry Pi OS, and CentOS with one-liner installation.
-
-### Hardware Compatibility
-
-- amd64 / x86-64
-- arm64
-- armv7
-
-### System Compatibility
-
-Official Support
-- Debian 12 (✅ Tested, Recommended)
-- Ubuntu Server 26.04 (✅ Tested by this fork)
-- Ubuntu Server 20.04 (✅ Tested)
-- Raspberry Pi OS (✅ Tested)
-
-Community Support
-- Elementary 6.1 (✅ Tested)
-- Armbian 22.04 (✅ Tested)
-- Alpine (🚧 Not Fully Tested Yet)
-- OpenWrt (🚧 Not Fully Tested Yet)
-- ArchLinux (🚧 Not Fully Tested Yet)
-
-### Quick Setup CasaOS
-
-Install this fork with the maintained [CasaOS-Install](https://github.com/alvins82/CasaOS-Install) release so that all component compatibility fixes are included.
-
-Install the latest stable release with one command:
-
-```sh
-curl -fsSL https://github.com/alvins82/CasaOS-Install/releases/latest/download/install.sh | sudo bash
-```
-
-This runs the same released `install.sh` on every supported operating system and architecture.
-
-Do not use `get.casaos.io` to install this fork; that endpoint installs IceWhaleTech's upstream component bundle.
-
-### Update CasaOS
-
-The CasaOS dashboard checks [CasaOS-Install releases](https://github.com/alvins82/CasaOS-Install/releases) and installs updates from this fork, so upstream updates cannot replace the patched components. Release tags are platform-neutral starting with `v0.4.18`; the installer detects the operating system and architecture at runtime. You can also repeat the installation command above at any time.
-
-Existing `v0.4.17-ubuntu26.2` installations must run the installation command above once to enable the fork-aware updater; future releases can then be applied from the dashboard.
-
-To check the installed fork release from a terminal, run:
-
-```sh
-cat /var/lib/casaos/fork-release
-```
-
-
-
-### Uninstall CasaOS
-
-
-v0.3.3 or newer
-
-```sh
-casaos-uninstall
-```
-
-Before v0.3.3
-
-```sh
-curl -fsSL https://get.icewhale.io/casaos-uninstall.sh | sudo bash
-```
-
-## Community 
-
-The word Casa comes from the Spanish word for "home". Project CasaOS originated as a pre-installed system for the crowdfunded product [ZimaBoard](https://www.zimaboard.com) on Kickstarter.
-
-After looking at many systems and software on the market, the team found no server system designed for home scenarios, sadly true.
-
-So, we set out to build this open-source project to develop CasaOS with our own hands, everyone in the community, and you.
-
-We believe that through community-driven collaborative innovation and open communication with global developers, we can reshape the digital home experience like never before.
-
-**A warm welcome for you to get help or share great ideas in the [Discord](https://discord.gg/knqAbbBbeX)!**
-
-[![Discord Card](https://discordapp.com/api/guilds/884667213326463016/widget.png?style=banner2)](https://discord.gg/knqAbbBbeX)
-
-## Contributing
-
-CasaOS is a community-driven open source project and the people involved are CasaOS users. That means CasaOS will always need contributions from community members just like you!
-
-- See <https://wiki.casaos.io/en/contribute> for ways of contributing to CasaOS
-- See <https://wiki.casaos.io/en/contribute/development> if you want to be involved in code contribution specifically
-
-
-## Credits
-
-Many thanks to everyone who has helped CasaOS so far!
-
-Everyone's contribution is greatly appreciated. ([Emoji Key](https://allcontributors.org/docs/en/emoji-key))
+CasaOS is the work of IceWhale and its contributors. Their copyright notices are kept throughout the source, as the licence requires, and their contributor list is kept here as it stood.
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
@@ -280,16 +154,6 @@ Everyone's contribution is greatly appreciated. ([Emoji Key](https://allcontribu
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind are welcome!
+## Licence
 
-## Changelog
-
-Detailed changes for each release are documented in the [release notes](https://github.com/IceWhaleTech/CasaOS/releases).
-
----
-
-<p align="center">
-    <a href="https://dashboard.trackgit.com/token/l5q8egi92tfhlxd70l2l">
-        <img src="https://us-central1-trackgit-analytics.cloudfunctions.net/token/ping/l5q8egi92tfhlxd70l2l" alt="trackgit-views" />
-    </a>
-</p>
+Apache License 2.0 — see [LICENSE](LICENSE). CasaOS and the CasaOS logo are marks of IceWhale; this distribution uses the name to say what it is a release of, and nothing more.
