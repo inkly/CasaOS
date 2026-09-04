@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+### Fixed
+
+- [Logging] journald no longer receives an access-log line for the internal system-status posts CasaOS-LocalStorage sends to loopback every 5 seconds; the dashboard telemetry rate is unchanged and every other request is still logged ([CasaOS #2211](https://github.com/IceWhaleTech/CasaOS/issues/2211)).
+
 ### Security
 
 - [API] The file manager API (`/v1/file`, `/v1/folder`, `/v1/batch`, `/v1/image`) now requires a token from loopback as well: any local process, including a container on the host network, could read, write and delete files as root without one. Reported as [CasaOS #2566](https://github.com/IceWhaleTech/CasaOS/pull/2566), whose "path traversal" framing is wrong — the paths are absolute by design — and whose sanitizer is not adopted, because confining the file manager to a fixed set of roots would break browsing `/mnt` and `/media`, i.e. every USB drive and cloud mount.

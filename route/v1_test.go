@@ -55,3 +55,31 @@ func TestSkipJWT(t *testing.T) {
 		})
 	}
 }
+
+func TestSkipAccessLog(t *testing.T) {
+	cases := []struct {
+		name   string
+		path   string
+		realIP string
+		want   bool
+	}{
+		// The flood from issue #2211: local-storage posts sys_disk and sys_usb
+		// here every 5s, straight to the loopback listener.
+		{"the internal status post is not logged", "/v1/notify/system_status", "127.0.0.1", true},
+		{"the internal status post is not logged over IPv6 either", "/v1/notify/system_status", "::1", true},
+		{"the wildcard notify route is not logged either", "/v1/notify/casaos:file:recover", "127.0.0.1", true},
+
+		// Everything else stays in the log.
+		{"a remote notify post is logged", "/v1/notify/system_status", "192.168.1.20", false},
+		{"another loopback route is logged", "/v1/sys/hardware", "127.0.0.1", false},
+		{"a similarly named route is logged", "/v1/notifyx", "127.0.0.1", false},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := skipAccessLog(tc.path, tc.realIP); got != tc.want {
+				t.Fatalf("skipAccessLog(%q, %q) = %v, want %v", tc.path, tc.realIP, got, tc.want)
+			}
+		})
+	}
+}

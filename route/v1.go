@@ -45,7 +45,22 @@ func skipJWT(path, realIP string) bool {
 		}
 	}
 
+	return isLoopback(realIP)
+}
+
+// internalNotifyPrefix is where CasaOS-LocalStorage POSTs sys_disk/sys_usb
+// every 5s (misc.go sendStorageStats). Logging each call floods journald
+// (issue #2211), so loopback callers of these routes skip the access log.
+const internalNotifyPrefix = "/v1/notify/"
+
+func isLoopback(realIP string) bool {
 	return realIP == "::1" || realIP == "127.0.0.1"
+}
+
+// skipAccessLog reports whether the Echo access-log line is dropped for a
+// request: only internal notify posts, and only from the host itself.
+func skipAccessLog(path, realIP string) bool {
+	return strings.HasPrefix(path, internalNotifyPrefix) && isLoopback(realIP)
 }
 
 func InitV1Router() http.Handler {
@@ -61,7 +76,13 @@ func InitV1Router() http.Handler {
 	})))
 	e.Use(echo_middleware.Gzip())
 	e.Use(echo_middleware.Recover())
-	e.Use(echo_middleware.Logger())
+	e.Use(echo_middleware.LoggerWithConfig(echo_middleware.LoggerConfig{
+		Skipper: func(c echo.Context) bool {
+			// The registered route is /v1/notify/:path, so match on the request
+			// path rather than c.Path().
+			return skipAccessLog(c.Request().URL.Path, c.RealIP())
+		},
+	}))
 
 	e.GET("/v1/sys/debug", v1.GetSystemConfigDebug) // //debug
 
