@@ -5,20 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.4.41] - 2026-09-04
 
 ### Added
 
 - [Sharing] A share can be marked as a Time Machine destination. It gets Apple's SMB extensions (`vfs objects = catia fruit streams_xattr`, `fruit:time machine = yes`) and smbd advertises it over mDNS, so it shows up in Time Machine preferences on Macs on the network. Other shares are untouched, and a host without Samba's `vfs_fruit` module (`samba-vfs-modules` on Debian and Ubuntu) is told so instead of getting a share that refuses every connection ([CasaOS #1030](https://github.com/IceWhaleTech/CasaOS/issues/1030)).
 
-### Changed
-
-
-### Removed
-
 ### Fixed
 
 - [Logging] journald no longer receives an access-log line for the internal system-status posts CasaOS-LocalStorage sends to loopback every 5 seconds; the dashboard telemetry rate is unchanged, and remote requests to those routes, like every route outside `/v1/notify/`, are still logged ([CasaOS #2211](https://github.com/IceWhaleTech/CasaOS/issues/2211)).
+- [Dashboard] The updater panel showed the version twice over (`vv0.4.40`): `current_version` answered with the release tag, which carries its own `v`, while the dashboard adds one itself. The API now reports the bare version, as it always did upstream.
 
 ### Security
 
