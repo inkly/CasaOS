@@ -25,7 +25,9 @@ curl -fsSL https://github.com/inkly/CasaOS-Install/releases/latest/download/inst
 
 One command for every supported system and architecture; the installer detects both at run time. Run it again to upgrade, or use the update button in the dashboard, which follows this distribution's releases.
 
-**Migrating from IceWhale's or alvins82's installer** works the same way, in place, without uninstalling first. The installer stops and restarts the CasaOS services while upgrading, so back up what matters. Afterwards, `cat /var/lib/casaos/fork-release` prints the distribution release installed — `v0.4.40` for the current one. Do not use `get.casaos.io/update` after migrating: it installs IceWhale's frozen component bundle over this one.
+**Migrating from IceWhale's or alvins82's installer** works the same way, in place, without uninstalling first. The installer stops and restarts the CasaOS services while upgrading, so back up what matters. Afterwards, `cat /var/lib/casaos/fork-release` prints the distribution release installed — `v0.4.41` for the current one. Do not use `get.casaos.io/update` after migrating: it installs IceWhale's frozen component bundle over this one.
+
+**If the dashboard reports you are on the latest version and never offers an update**, run the install command once by hand. Up to v0.4.41, four files shipped here still carried the previous fork's release URLs, and one of them rewrote `/etc/casaos/casaos.conf` on every install, so a host installed from this distribution polled a feed whose newest release is older than what it was already running. From CasaOS-Install v0.4.42 onwards, re-running the installer corrects the configuration in place, and the update button follows this distribution on its own afterwards.
 
 Everything the installer downloads is verified against a SHA-256 digest before extraction. What is in each release, and how a release is built, is described in [CasaOS-Install](https://github.com/inkly/CasaOS-Install#readme).
 
@@ -52,6 +54,7 @@ Relative to upstream, through alvins82's fork and then here. The full list per r
 - **Storage** — External disks form the merged `/DATA` while the system disk stays out of it; volumes can be renamed; merge mounts are restored across reboots and slow disks.
 - **Network** — The gateway serves HTTPS with a certificate you supply.
 - **Security** — Routes that act as root on the host require a token even from loopback. The dashboard no longer sends a machine fingerprint to a third party.
+- **Updater** — Update discovery and installation follow this distribution's releases rather than IceWhale's frozen bundle, in the binary, in the shipped configuration samples, and in the setup script that writes the running host's configuration.
 - **Platform** — Docker 29 and Ubuntu 26 support; every component is built and released from CI, with digests published alongside.
 
 ## Features
@@ -79,6 +82,23 @@ The upstream Discord, wiki and website belong to IceWhale and are not run by thi
 | [CasaOS-MessageBus](https://github.com/inkly/CasaOS-MessageBus) | events between services |
 | [CasaOS-LocalStorage](https://github.com/inkly/CasaOS-LocalStorage) | disks, volumes, merged storage |
 | [CasaOS-Install](https://github.com/inkly/CasaOS-Install) | the installer and the release bundle |
+
+## Development
+
+This repository builds `casaos`, the core service. Behind the gateway it serves the `/v1` API — system information and power actions, listening ports, the file manager (`/v1/file`, `/v1/folder`, `/v1/batch`, `/v1/image`), Samba shares and accounts (`/v1/samba`), cloud drivers, and status notifications from the other services (`/v1/notify`) — together with a `/v2` API generated from [`api/casaos/openapi.yaml`](api/casaos/openapi.yaml). It also polls this distribution's release feed and runs the installer when the dashboard asks for an update.
+
+Its configuration is `/etc/casaos/casaos.conf`, created on first run from [the sample embedded in the binary](build/sysroot/etc/casaos/casaos.conf.sample). Its database and user data live under `/var/lib/casaos`, its logs under `/var/log/casaos`, and the shell helpers it shells out to under `/usr/share/casaos/shell`. The dashboard is the `UI` submodule and is built separately.
+
+Go 1.21 or newer is the only requirement; the Go build does not need the submodule.
+
+```sh
+CGO_ENABLED=0 GOOS=linux go build .
+go test ./...
+```
+
+`TestPorts` reads the host's own listening sockets, so it fails in a container that has none.
+
+Release packages for amd64, arm64 and armv7 are built on a tag by [`.github/workflows/release.yml`](.github/workflows/release.yml), not on a workstation.
 
 ## History
 
