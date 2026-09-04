@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- [Logging] journald no longer receives an access-log line for the internal system-status posts CasaOS-LocalStorage sends to loopback every 5 seconds; the dashboard telemetry rate is unchanged and every other request is still logged ([CasaOS #2211](https://github.com/IceWhaleTech/CasaOS/issues/2211)).
+- [Logging] journald no longer receives an access-log line for the internal system-status posts CasaOS-LocalStorage sends to loopback every 5 seconds; the dashboard telemetry rate is unchanged, and remote requests to those routes, like every route outside `/v1/notify/`, are still logged ([CasaOS #2211](https://github.com/IceWhaleTech/CasaOS/issues/2211)).
 
 ### Security
 
