@@ -244,9 +244,9 @@ changelog:
 #   name_template: "v{{ .Version }}"
 release:
   github:
-    owner: IceWhaleTech
+    owner: inkly
     name: CasaOS
-  draft: true
+  draft: false
   prerelease: auto
   mode: replace
   name_template: "v{{ .Version }}"
