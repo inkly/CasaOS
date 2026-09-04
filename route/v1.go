@@ -4,6 +4,7 @@ import (
 	"crypto/ecdsa"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/IceWhaleTech/CasaOS-Common/external"
 	"github.com/IceWhaleTech/CasaOS-Common/utils/jwt"
@@ -13,6 +14,34 @@ import (
 	"github.com/labstack/echo/v4"
 	echo_middleware "github.com/labstack/echo/v4/middleware"
 )
+
+// rootPrivilegedRoutePrefixes covers the routes that act on the host as root:
+// installing operating system packages, and creating or removing the system
+// accounts that protect Samba shares.
+var rootPrivilegedRoutePrefixes = []string{
+	"/v1/sys/packages",
+	// The whole samba family, not just account management: creating a share
+	// changes ownership and permissions of a caller-supplied directory as root.
+	"/v1/samba",
+}
+
+// skipJWT reports whether the JWT check can be skipped for a request.
+//
+// Loopback requests are trusted for most of the API, but never for the
+// routes that act as root on the host: those run apt, useradd and smbpasswd, and
+// any local process can reach the gateway from 127.0.0.1 - including a container
+// CasaOS itself started on the host network. The only client of these routes is
+// the web UI, which always sends an Authorization header, so requiring a token
+// here costs nothing.
+func skipJWT(path, realIP string) bool {
+	for _, prefix := range rootPrivilegedRoutePrefixes {
+		if strings.HasPrefix(path, prefix) {
+			return false
+		}
+	}
+
+	return realIP == "::1" || realIP == "127.0.0.1"
+}
 
 func InitV1Router() http.Handler {
 	e := echo.New()
@@ -43,7 +72,7 @@ func InitV1Router() http.Handler {
 	//	e.Any("/v1/test", v1.CheckNetwork)
 	v1Group.Use(echo_middleware.JWTWithConfig(echo_middleware.JWTConfig{
 		Skipper: func(c echo.Context) bool {
-			return c.RealIP() == "::1" || c.RealIP() == "127.0.0.1"
+			return skipJWT(c.Path(), c.RealIP())
 		},
 		ParseTokenFunc: func(token string, c echo.Context) (interface{}, error) {
 			valid, claims, err := jwt.Validate(token, func() (*ecdsa.PublicKey, error) { return external.GetPublicKey(config.CommonInfo.RuntimePath) })
@@ -176,8 +205,18 @@ func InitV1Router() http.Handler {
 			{
 				v1SharesGroup.GET("", v1.GetSambaSharesList)
 				v1SharesGroup.POST("", v1.PostSambaSharesCreate)
+				v1SharesGroup.PUT("/:id", v1.PutSambaShare)
 				v1SharesGroup.DELETE("/:id", v1.DeleteSambaShares)
 				v1SharesGroup.GET("/status", v1.GetSambaStatus)
+			}
+
+			v1SambaUsersGroup := v1SambaGroup.Group("/users")
+			v1SambaUsersGroup.Use()
+			{
+				v1SambaUsersGroup.GET("", v1.GetSambaUsersList)
+				v1SambaUsersGroup.POST("", v1.PostSambaUserCreate)
+				v1SambaUsersGroup.PUT("/:username/password", v1.PutSambaUserPassword)
+				v1SambaUsersGroup.DELETE("/:username", v1.DeleteSambaUser)
 			}
 		}
 		v1NotifyGroup := v1Group.Group("/notify")

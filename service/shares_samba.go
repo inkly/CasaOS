@@ -1,0 +1,173 @@
+package service
+
+import (
+	"errors"
+	"fmt"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
+
+	model2 "github.com/IceWhaleTech/CasaOS/service/model"
+)
+
+const (
+	sambaConfigDir       = "/etc/samba"
+	sambaConfigFile      = "/etc/samba/smb.conf"
+	sambaShareConfigName = "smb.casa.conf"
+	sambaShareConfigFile = "/etc/samba/smb.casa.conf"
+)
+
+// sambaSection renders one share as an smb.conf section.
+//
+// A share with no Username is written exactly as CasaOS has always written it,
+// field for field and line for line. Every row predating authenticated shares
+// carries an empty Username, so an upgrade regenerates their sections unchanged.
+//
+// An authenticated share drops the guest access, the world-writable masks and
+// the root ownership together. Leaving any single one behind would make the
+// authentication decorative: "guest ok" alone re-opens the share, and
+// "force user = root" alone hands every file back to root no matter who
+// connected.
+func sambaSection(share model2.SharesDBModel) string {
+	name := filepath.Base(share.Path)
+
+	if share.Username == "" {
+		return "\n[" + name + "]\n" +
+			"comment = CasaOS share " + name + "\n" +
+			"public = Yes\n" +
+			"path = " + share.Path + "\n" +
+			"browseable = Yes\n" +
+			"read only = No\n" +
+			"guest ok = Yes\n" +
+			"create mask = 0777\n" +
+			"directory mask = 0777\n" +
+			"force user = root\n\n"
+	}
+
+	return "\n[" + name + "]\n" +
+		"comment = CasaOS share " + name + "\n" +
+		"public = No\n" +
+		"path = " + share.Path + "\n" +
+		"browseable = Yes\n" +
+		"read only = No\n" +
+		"guest ok = No\n" +
+		"valid users = " + share.Username + "\n" +
+		"create mask = 0660\n" +
+		"directory mask = 0770\n" +
+		"force user = " + share.Username + "\n\n"
+}
+
+// validateSambaConfig asks Samba's own parser whether the generated file is
+// usable.
+//
+// smb.casa.conf is included by smb.conf, and casaos-wsdd.service declares
+// PartOf=smbd.service: a configuration smbd refuses does not merely break
+// sharing, it takes network discovery down with it, and neither failure is
+// reported anywhere. Checking first is what stops one bad share from silently
+// disabling both.
+//
+// A host without Samba's tooling installed has nothing to validate against,
+// which is not an error.
+func validateSambaConfig() error {
+	if _, err := exec.LookPath("testparm"); err != nil {
+		return nil
+	}
+
+	output, err := exec.Command("testparm", "--suppress-prompt", sambaConfigFile).CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("samba rejected the generated share configuration: %s", strings.TrimSpace(string(output)))
+	}
+
+	return nil
+}
+
+// syncGuestMapping keeps the global guest mapping in step with whether any share
+// is actually protected.
+//
+// With a protected share present the setting has to be "never": under
+// "bad user" a client whose credentials are refused is silently remapped to the
+// guest account and receives ACCESS_DENIED instead of being asked for a
+// password, so a protected share looks broken rather than protected.
+//
+// With no protected share it has to go back to "bad user". Windows sends the
+// logged-in account name whether or not the share wants one, and under "never"
+// that unknown name is refused outright instead of falling back to guest, which
+// would break the plain guest shares people have always used.
+//
+// Only that one line is rewritten, on an smb.conf CasaOS has already written.
+// InitSambaConfig returns early on such hosts, so this is the only route by
+// which the setting can reach an existing installation, and regenerating the
+// whole file would discard the hand edits the upstream issue thread is full of.
+func syncGuestMapping(hasProtectedShare bool) error {
+	content, err := os.ReadFile(sambaConfigFile)
+	if err != nil {
+		return err
+	}
+
+	from, to := "map to guest = never", "map to guest = bad user"
+	if hasProtectedShare {
+		from, to = to, from
+	}
+
+	updated := strings.ReplaceAll(string(content), from, to)
+	if updated == string(content) {
+		return nil
+	}
+
+	return os.WriteFile(sambaConfigFile, []byte(updated), 0o644)
+}
+
+// shareRoots are the directories a share may live under.
+//
+// Sharing a folder changes its ownership and permissions as root, on a path the
+// caller supplies. Without a boundary that is a primitive for handing any
+// directory on the host to an arbitrary account, so the API is confined to the
+// places a network share plausibly belongs: CasaOS storage and the usual mount
+// points for external media.
+var shareRoots = []string{
+	"/DATA",
+	"/var/lib/casaos/files",
+	"/mnt",
+	"/media",
+	"/srv",
+}
+
+var (
+	ErrSharePathNotDirectory = errors.New("only a directory can be shared")
+	ErrSharePathOutsideRoots = errors.New("a share must live under /DATA, /mnt, /media or /srv")
+)
+
+// ValidateSharePath resolves path and reports whether it is a real directory
+// inside one of the permitted roots.
+//
+// Symlinks are resolved before the check rather than after, so a link planted
+// inside a share cannot be used to reach a target outside it.
+func ValidateSharePath(path string) (string, error) {
+	resolved, err := filepath.EvalSymlinks(path)
+	if err != nil {
+		return "", err
+	}
+
+	resolved, err = filepath.Abs(resolved)
+	if err != nil {
+		return "", err
+	}
+
+	info, err := os.Lstat(resolved)
+	if err != nil {
+		return "", err
+	}
+
+	if !info.IsDir() {
+		return "", ErrSharePathNotDirectory
+	}
+
+	for _, root := range shareRoots {
+		if resolved == root || strings.HasPrefix(resolved, root+string(os.PathSeparator)) {
+			return resolved, nil
+		}
+	}
+
+	return "", ErrSharePathOutsideRoots
+}

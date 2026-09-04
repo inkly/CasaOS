@@ -11,14 +11,17 @@
 package service
 
 import (
-	"path/filepath"
+	"os"
+	"strconv"
 	"strings"
 
 	"github.com/IceWhaleTech/CasaOS-Common/utils/command"
+	"github.com/IceWhaleTech/CasaOS-Common/utils/logger"
 	"github.com/IceWhaleTech/CasaOS/pkg/config"
 	"github.com/IceWhaleTech/CasaOS/pkg/utils/file"
 	"github.com/IceWhaleTech/CasaOS/service/model"
 	model2 "github.com/IceWhaleTech/CasaOS/service/model"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -26,80 +29,157 @@ type SharesService interface {
 	GetSharesList() (shares []model2.SharesDBModel)
 	GetSharesByPath(path string) (shares []model2.SharesDBModel)
 	GetSharesByName(name string) (shares []model2.SharesDBModel)
-	CreateShare(share model2.SharesDBModel)
-	DeleteShare(id string)
-	UpdateConfigFile()
+	CreateShare(share model2.SharesDBModel) error
+	GetShareByID(id string) (share model2.SharesDBModel, found bool)
+	UpdateShareUsername(id string, username string) error
+	DeleteShare(id string) error
+	UpdateConfigFile() error
 	InitSambaConfig()
-	DeleteShareByPath(path string)
+	DeleteShareByPath(path string) error
 }
 
 type sharesStruct struct {
 	db *gorm.DB
 }
 
-func (s *sharesStruct) DeleteShareByPath(path string) {
+func (s *sharesStruct) DeleteShareByPath(path string) error {
 	s.db.Where("path LIKE ?", path+"%").Delete(&model.SharesDBModel{})
-	s.UpdateConfigFile()
+
+	return s.UpdateConfigFile()
 }
 
 func (s *sharesStruct) GetSharesByName(name string) (shares []model2.SharesDBModel) {
-	s.db.Select("anonymous,path,id").Where("name = ?", name).Find(&shares)
+	s.db.Where("name = ?", name).Find(&shares)
 
 	return
 }
 
 func (s *sharesStruct) GetSharesByPath(path string) (shares []model2.SharesDBModel) {
-	s.db.Select("anonymous,path,id").Where("path = ?", path).Find(&shares)
+	s.db.Where("path = ?", path).Find(&shares)
 	return
 }
 
 func (s *sharesStruct) GetSharesList() (shares []model2.SharesDBModel) {
-	s.db.Select("anonymous,path,id").Find(&shares)
+	s.db.Find(&shares)
 	return
 }
 
-func (s *sharesStruct) CreateShare(share model2.SharesDBModel) {
-	s.db.Create(&share)
+func (s *sharesStruct) CreateShare(share model2.SharesDBModel) error {
 	s.InitSambaConfig()
-	s.UpdateConfigFile()
-}
 
-func (s *sharesStruct) DeleteShare(id string) {
-	s.db.Where("id= ?", id).Delete(&model.SharesDBModel{})
-	s.UpdateConfigFile()
-}
-
-func (s *sharesStruct) UpdateConfigFile() {
+	// Write and validate the configuration this share would produce before the
+	// row is committed. Inserting first would leave an unusable row behind when
+	// Samba rejects the result, and every later share operation would then fail
+	// on that same row.
 	shares := []model2.SharesDBModel{}
-	s.db.Select("anonymous,path").Find(&shares)
-	// generated config file
-	configStr := ""
-	for _, share := range shares {
-		dirName := filepath.Base(share.Path)
-		configStr += `
-[` + dirName + `]
-comment = CasaOS share ` + dirName + `
-public = Yes
-path = ` + share.Path + `
-browseable = Yes
-read only = No
-guest ok = Yes
-create mask = 0777
-directory mask = 0777
-force user = root
+	s.db.Find(&shares)
 
-`
+	if err := s.applyConfig(append(shares, share)); err != nil {
+		return err
 	}
-	// write config file
-	file.WriteToPath([]byte(configStr), "/etc/samba", "smb.casa.conf")
+
+	s.db.Create(&share)
+
+	return nil
+}
+
+func (s *sharesStruct) GetShareByID(id string) (share model2.SharesDBModel, found bool) {
+	result := s.db.Where("id = ?", id).First(&share)
+
+	return share, result.Error == nil
+}
+
+// UpdateShareUsername moves a share between guest access and a named account,
+// in either direction. An empty username makes it a guest share again.
+//
+// As with creation, the configuration is written and accepted before the row is
+// changed, so a rejected result leaves the share exactly as it was rather than
+// half converted.
+func (s *sharesStruct) UpdateShareUsername(id string, username string) error {
+	shares := []model2.SharesDBModel{}
+	s.db.Find(&shares)
+
+	for i := range shares {
+		if strconv.FormatUint(uint64(shares[i].ID), 10) == id {
+			shares[i].Username = username
+			shares[i].Anonymous = username == ""
+		}
+	}
+
+	if err := s.applyConfig(shares); err != nil {
+		return err
+	}
+
+	return s.db.Model(&model.SharesDBModel{}).
+		Where("id = ?", id).
+		Updates(map[string]interface{}{"username": username, "anonymous": username == ""}).
+		Error
+}
+
+func (s *sharesStruct) DeleteShare(id string) error {
+	s.db.Where("id= ?", id).Delete(&model.SharesDBModel{})
+
+	return s.UpdateConfigFile()
+}
+
+func (s *sharesStruct) UpdateConfigFile() error {
+	shares := []model2.SharesDBModel{}
+	s.db.Find(&shares)
+
+	return s.applyConfig(shares)
+}
+
+// applyConfig writes the share configuration, has Samba check it, and restarts
+// smbd only once it has been accepted.
+func (s *sharesStruct) applyConfig(shares []model2.SharesDBModel) error {
+	configStr := ""
+	hasProtectedShare := false
+
+	for _, share := range shares {
+		configStr += sambaSection(share)
+
+		if share.Username != "" {
+			hasProtectedShare = true
+		}
+	}
+
+	if err := syncGuestMapping(hasProtectedShare); err != nil {
+		logger.Error("failed to update the samba guest mapping", zap.Error(err))
+	}
+
+	previous, previousErr := os.ReadFile(sambaShareConfigFile)
+
+	if err := file.WriteToPath([]byte(configStr), sambaConfigDir, sambaShareConfigName); err != nil {
+		return err
+	}
+
+	if err := validateSambaConfig(); err != nil {
+		// Leave smbd pointed at something it will accept. With no previous file
+		// to restore, removing ours is the correct undo: smb.conf includes it,
+		// and Samba ignores an include that does not exist.
+		if previousErr == nil {
+			if restoreErr := file.WriteToPath(previous, sambaConfigDir, sambaShareConfigName); restoreErr != nil {
+				logger.Error("failed to restore the previous share configuration", zap.Error(restoreErr))
+			}
+		} else if removeErr := os.Remove(sambaShareConfigFile); removeErr != nil {
+			logger.Error("failed to remove the rejected share configuration", zap.Error(removeErr))
+		}
+
+		return err
+	}
+
 	// restart samba
 	command.OnlyExec("source " + config.AppInfo.ShellPath + "/helper.sh ;RestartSMBD")
+
+	return nil
 }
 
 func (s *sharesStruct) InitSambaConfig() {
-	if file.Exists("/etc/samba/smb.conf") {
-		str := file.ReadLine(1, "/etc/samba/smb.conf")
+	if file.Exists(sambaConfigFile) {
+		str := file.ReadLine(1, sambaConfigFile)
 		if strings.Contains(str, "# Copyright (c) 2021-2022 CasaOS Inc. All rights reserved.") {
+			// The guest mapping of an already-configured host is kept in step by
+			// applyConfig, which knows whether any share is actually protected.
 			return
 		}
 		file.MoveFile("/etc/samba/smb.conf", "/etc/samba/smb.conf.bak")
@@ -151,7 +231,7 @@ func (s *sharesStruct) InitSambaConfig() {
    fruit:wipe_intentionally_left_blank_rfork = yes
    fruit:delete_empty_adfiles = yes
    multicast dns register = yes
-   map to guest = bad user
+   map to guest = never
    include=/etc/samba/smb.casa.conf`
 		file.WriteToPath([]byte(smbConf), "/etc/samba", "smb.conf")
 	}
