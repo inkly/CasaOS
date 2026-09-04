@@ -32,6 +32,19 @@ const (
 func sambaSection(share model2.SharesDBModel) string {
 	name := filepath.Base(share.Path)
 
+	// "vfs objects" is a per-share setting, which is why the global template
+	// leaves its module line commented out: a share without the flag loads no
+	// module at all, and putting one in [global] instead is what takes every
+	// share down on a host missing vfs_fruit. "fruit:time machine" already
+	// implies durable handles and no kernel oplocks, kernel share modes or posix
+	// locking for this share, and smbd advertises it as _adisk._tcp over mDNS by
+	// itself, so those lines are not repeated here.
+	timeMachine := ""
+	if share.TimeMachine {
+		timeMachine = "vfs objects = catia fruit streams_xattr\n" +
+			"fruit:time machine = yes\n"
+	}
+
 	if share.Username == "" {
 		return "\n[" + name + "]\n" +
 			"comment = CasaOS share " + name + "\n" +
@@ -42,7 +55,7 @@ func sambaSection(share model2.SharesDBModel) string {
 			"guest ok = Yes\n" +
 			"create mask = 0777\n" +
 			"directory mask = 0777\n" +
-			"force user = root\n\n"
+			"force user = root\n" + timeMachine + "\n"
 	}
 
 	return "\n[" + name + "]\n" +
@@ -55,7 +68,7 @@ func sambaSection(share model2.SharesDBModel) string {
 		"valid users = " + share.Username + "\n" +
 		"create mask = 0660\n" +
 		"directory mask = 0770\n" +
-		"force user = " + share.Username + "\n\n"
+		"force user = " + share.Username + "\n" + timeMachine + "\n"
 }
 
 // validateSambaConfig asks Samba's own parser whether the generated file is
@@ -77,6 +90,38 @@ func validateSambaConfig() error {
 	output, err := exec.Command("testparm", "--suppress-prompt", sambaConfigFile).CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("samba rejected the generated share configuration: %s", strings.TrimSpace(string(output)))
+	}
+
+	return nil
+}
+
+var ErrTimeMachineUnsupported = errors.New("Time Machine needs Samba's vfs_fruit module (package samba-vfs-modules on Debian and Ubuntu)")
+
+// ValidateTimeMachineSupport checks that smbd can load the module a Time
+// Machine share names.
+//
+// testparm parses the configuration without loading VFS modules, so a missing
+// one sails through validateSambaConfig and only surfaces as that single share
+// refusing every connection. A host without smbd has nothing to check against,
+// which is not an error, and neither is a build that lays its modules out
+// somewhere unexpected: the guard never turns into a false refusal.
+func ValidateTimeMachineSupport() error {
+	output, err := exec.Command("smbd", "-b").Output()
+	if err != nil {
+		return nil
+	}
+
+	for _, line := range strings.Split(string(output), "\n") {
+		key, dir, ok := strings.Cut(strings.TrimSpace(line), ":")
+		if !ok || key != "MODULESDIR" {
+			continue
+		}
+
+		if _, err := os.Stat(filepath.Join(strings.TrimSpace(dir), "vfs", "fruit.so")); err != nil {
+			return ErrTimeMachineUnsupported
+		}
+
+		return nil
 	}
 
 	return nil

@@ -17,6 +17,8 @@ type Shares struct {
 	// Username is the share account allowed to mount a non-anonymous share. It
 	// is ignored when Anonymous is true.
 	Username string `json:"username"`
+	// TimeMachine advertises the share to macOS as a Time Machine destination.
+	TimeMachine bool `json:"time_machine"`
 }
 
 // SambaUser is the payload for creating a share account or changing its

@@ -31,7 +31,7 @@ type SharesService interface {
 	GetSharesByName(name string) (shares []model2.SharesDBModel)
 	CreateShare(share model2.SharesDBModel) error
 	GetShareByID(id string) (share model2.SharesDBModel, found bool)
-	UpdateShareUsername(id string, username string) error
+	UpdateShare(id string, username string, timeMachine bool) error
 	DeleteShare(id string) error
 	UpdateConfigFile() error
 	InitSambaConfig()
@@ -89,13 +89,14 @@ func (s *sharesStruct) GetShareByID(id string) (share model2.SharesDBModel, foun
 	return share, result.Error == nil
 }
 
-// UpdateShareUsername moves a share between guest access and a named account,
-// in either direction. An empty username makes it a guest share again.
+// UpdateShare moves a share between guest access and a named account, in either
+// direction, and sets its Time Machine flag. An empty username makes it a guest
+// share again.
 //
 // As with creation, the configuration is written and accepted before the row is
 // changed, so a rejected result leaves the share exactly as it was rather than
 // half converted.
-func (s *sharesStruct) UpdateShareUsername(id string, username string) error {
+func (s *sharesStruct) UpdateShare(id string, username string, timeMachine bool) error {
 	shares := []model2.SharesDBModel{}
 	s.db.Find(&shares)
 
@@ -103,6 +104,7 @@ func (s *sharesStruct) UpdateShareUsername(id string, username string) error {
 		if strconv.FormatUint(uint64(shares[i].ID), 10) == id {
 			shares[i].Username = username
 			shares[i].Anonymous = username == ""
+			shares[i].TimeMachine = timeMachine
 		}
 	}
 
@@ -112,7 +114,7 @@ func (s *sharesStruct) UpdateShareUsername(id string, username string) error {
 
 	return s.db.Model(&model.SharesDBModel{}).
 		Where("id = ?", id).
-		Updates(map[string]interface{}{"username": username, "anonymous": username == ""}).
+		Updates(map[string]interface{}{"username": username, "anonymous": username == "", "time_machine": timeMachine}).
 		Error
 }
 

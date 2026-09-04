@@ -17,10 +17,14 @@ type SharesDBModel struct {
 	// share is open to guests, which is what every row created before
 	// authenticated shares existed carries, so an upgrade leaves them untouched.
 	Username string `json:"username"`
-	Path     string `json:"path"`
-	Name     string `json:"name"`
-	Updated  int64  `gorm:"autoUpdateTime"`
-	Created  int64  `gorm:"autoCreateTime"`
+	// TimeMachine adds Apple's SMB extensions to this share's section so macOS
+	// offers it as a Time Machine destination. AutoMigrate adds the column, and
+	// rows predating it read back as false, i.e. the section they already had.
+	TimeMachine bool   `json:"time_machine"`
+	Path        string `json:"path"`
+	Name        string `json:"name"`
+	Updated     int64  `gorm:"autoUpdateTime"`
+	Created     int64  `gorm:"autoCreateTime"`
 }
 
 func (p *SharesDBModel) TableName() string {

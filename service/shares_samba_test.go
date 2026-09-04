@@ -106,3 +106,32 @@ func TestSambaSectionNamesTheDirectory(t *testing.T) {
 		t.Fatalf("section should be named after the directory, got:\n%s", section)
 	}
 }
+
+func TestSambaSectionTimeMachine(t *testing.T) {
+	for _, share := range []model2.SharesDBModel{
+		{Path: "/DATA/Backups", TimeMachine: true},
+		{Path: "/DATA/Backups", Username: "alice", TimeMachine: true},
+	} {
+		section := sambaSection(share)
+		for _, want := range []string{"vfs objects = catia fruit streams_xattr", "fruit:time machine = yes"} {
+			if !strings.Contains(section, want) {
+				t.Errorf("time machine section (username %q) is missing %q:\n%s", share.Username, want, section)
+			}
+		}
+	}
+
+	// A share without the flag must load no VFS module: "vfs objects" on a host
+	// without vfs_fruit installed is what took every share down in the upstream
+	// issue thread.
+	for _, share := range []model2.SharesDBModel{
+		{Path: "/DATA/Media"},
+		{Path: "/DATA/Private", Username: "alice"},
+	} {
+		section := sambaSection(share)
+		for _, unwanted := range []string{"vfs objects", "fruit:"} {
+			if strings.Contains(section, unwanted) {
+				t.Errorf("plain section (username %q) contains %q:\n%s", share.Username, unwanted, section)
+			}
+		}
+	}
+}

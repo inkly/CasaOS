@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- [Sharing] A share can be marked as a Time Machine destination. It gets Apple's SMB extensions (`vfs objects = catia fruit streams_xattr`, `fruit:time machine = yes`) and smbd advertises it over mDNS, so it shows up in Time Machine preferences on Macs on the network. Other shares are untouched, and a host without Samba's `vfs_fruit` module (`samba-vfs-modules` on Debian and Ubuntu) is told so instead of getting a share that refuses every connection ([CasaOS #1030](https://github.com/IceWhaleTech/CasaOS/issues/1030)).
+
 ### Changed
 
 
