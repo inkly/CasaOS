@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Removed
+
+- [Config] The HTTP helper `httper.OasisGet`, which fetched a bearer token from IceWhale's `api.casaos.io` before every request it made, is gone: nothing in the codebase called it. The `ServerApi` field of the server configuration model, whose only reader was that helper, goes with it, as do the `ServerApi` and `Handshake` lines of the sample configuration that pointed at `api.casaos.io` and `socket.casaos.io`. An installed `/etc/casaos/casaos.conf` that still carries the two keys keeps working unchanged; they are simply ignored.
+
 ## [0.4.42] - 2026-09-04
 
 ### Fixed

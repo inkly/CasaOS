@@ -7,9 +7,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
-
-	"github.com/IceWhaleTech/CasaOS/pkg/config"
-	"github.com/tidwall/gjson"
 )
 
 // 发送GET请求
@@ -134,22 +131,4 @@ func ZeroTierGet(url string, head map[string]string) (content string, code int) 
 	result, _ := ioutil.ReadAll(resp.Body)
 	content = string(result)
 	return
-}
-
-// 发送GET请求
-// url:请求地址
-// response:请求返回的内容
-func OasisGet(url string) (response string) {
-	head := make(map[string]string)
-
-	t := make(chan string)
-
-	go func() {
-		str := Get(config.ServerInfo.ServerApi+"/token", nil)
-
-		t <- gjson.Get(str, "data").String()
-	}()
-	head["Authorization"] = <-t
-
-	return Get(url, head)
 }
