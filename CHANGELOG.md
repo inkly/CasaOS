@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [Config] The HTTP helper `httper.OasisGet`, which fetched a bearer token from IceWhale's `api.casaos.io` before every request it made, is gone: nothing in the codebase called it. The `ServerApi` field of the server configuration model, whose only reader was that helper, goes with it, as do the `ServerApi` and `Handshake` lines of the sample configuration that pointed at `api.casaos.io` and `socket.casaos.io`. An installed `/etc/casaos/casaos.conf` that still carries the two keys keeps working unchanged; they are simply ignored.
 
+### Fixed
+
+- [Notify] `go vet` reported two lock copies in the notification service: `GetList` took its receiver by value and `GetSystemTempMap` returned the `sync.Map` it holds by value, so each copied a map that embeds a mutex. Both now go through a pointer; the callers only range over the map, so nothing observable changes.
+
 ## [0.4.42] - 2026-09-04
 
 ### Fixed
