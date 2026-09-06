@@ -9,7 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- The install-time migration script no longer geo-locates the host. `__get_download_domain` curled `ipconfig.io/country`, falling back to `ifconfig.io/country_code`, at the top level of `build/scripts/migration/script.d/03-migrate-casaos.sh` — and `install.sh` runs every script in that directory on every install and every upgrade, so both third-party services were contacted each time regardless of whether a migration applied. Migration tools are fetched from `https://github.com/`; The domain is now a constant: not an environment knob either, because what it points at is downloaded and run as root without verification. The migration lists are unchanged.
+- The message-bus client is generated from this distribution's own tag (`inkly/CasaOS-MessageBus` at `v0.4.19`) instead of IceWhale's live `main` branch. `go generate` runs on every release tag, so until now a rename, a deletion or an edit upstream would have changed this binary or failed the build; the regenerated output is byte-identical.
+- `.github/sync_openapi.yml` is gone. It called an unpinned reusable workflow hosted in an IceWhale repository and passed it a repository token. It sat outside `.github/workflows/`, so GitHub never ran it, but it was one `git mv` away from running.
+- The install-time migration script no longer geo-locates the host. `__get_download_domain` curled `ipconfig.io/country`, falling back to `ifconfig.io/country_code`, at the top level of `build/scripts/migration/script.d/03-migrate-casaos.sh` — and `install.sh` runs every script in that directory on every install and every upgrade, so both third-party services were contacted each time regardless of whether a migration applied. Migration tools are fetched from `https://github.com/`, and the domain is a constant rather than a setting: what it points at is downloaded and run as root without verification. The migration lists are unchanged.
 
 ## [0.4.43] - 2026-09-06
 
