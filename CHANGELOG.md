@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- The install-time migration script no longer geo-locates the host. `__get_download_domain` curled `ipconfig.io/country`, falling back to `ifconfig.io/country_code`, at the top level of `build/scripts/migration/script.d/03-migrate-casaos.sh` — and `install.sh` runs every script in that directory on every install and every upgrade, so both third-party services were contacted each time regardless of whether a migration applied. Migration tools are fetched from `https://github.com/`; `CASAOS_DOWNLOAD_DOMAIN`, trailing slash included, selects a mirror explicitly. The migration lists are unchanged.
+
 ## [0.4.43] - 2026-09-06
 
 ### Removed
