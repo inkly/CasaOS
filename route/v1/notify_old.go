@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gorilla/websocket"
 	"github.com/inkly/CasaOS/service"
 	"github.com/inkly/CasaOS/types"
-	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
 )
 

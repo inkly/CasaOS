@@ -16,10 +16,10 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/go-ini/ini"
 	"github.com/inkly/CasaOS-Common/utils/constants"
 	"github.com/inkly/CasaOS/common"
 	"github.com/inkly/CasaOS/model"
-	"github.com/go-ini/ini"
 )
 
 var (

@@ -17,9 +17,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gorilla/websocket"
 	"github.com/inkly/CasaOS-Common/utils/logger"
 	"github.com/inkly/CasaOS/model"
-	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
 	"github.com/robfig/cron/v3"
 	"github.com/tidwall/gjson"

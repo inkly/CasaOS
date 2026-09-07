@@ -19,6 +19,7 @@ import (
 
 	util_http "github.com/inkly/CasaOS-Common/utils/http"
 
+	"github.com/coreos/go-systemd/daemon"
 	"github.com/inkly/CasaOS/common"
 	"github.com/inkly/CasaOS/pkg/cache"
 	"github.com/inkly/CasaOS/pkg/config"
@@ -26,7 +27,6 @@ import (
 	"github.com/inkly/CasaOS/pkg/utils/file"
 	"github.com/inkly/CasaOS/route"
 	"github.com/inkly/CasaOS/service"
-	"github.com/coreos/go-systemd/daemon"
 	"go.uber.org/zap"
 
 	"github.com/robfig/cron/v3"

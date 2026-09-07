@@ -11,10 +11,10 @@
 package service
 
 import (
+	"github.com/gorilla/websocket"
 	"github.com/inkly/CasaOS-Common/external"
 	"github.com/inkly/CasaOS/codegen/message_bus"
 	"github.com/inkly/CasaOS/pkg/config"
-	"github.com/gorilla/websocket"
 	"github.com/patrickmn/go-cache"
 	"gorm.io/gorm"
 )

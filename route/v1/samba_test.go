@@ -15,8 +15,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	v1 "github.com/inkly/CasaOS/route/v1"
 	"github.com/golang/mock/gomock"
+	v1 "github.com/inkly/CasaOS/route/v1"
 	"github.com/labstack/echo/v4"
 	"gotest.tools/assert"
 )
@@ -56,7 +56,6 @@ func TestGetSambaSharesList(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-
 
 	executeWithContext := func() *httptest.ResponseRecorder {
 		response := httptest.NewRecorder()
