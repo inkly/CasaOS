@@ -3,7 +3,7 @@ package driver
 import (
 	"context"
 
-	"github.com/IceWhaleTech/CasaOS/model"
+	"github.com/inkly/CasaOS/model"
 )
 
 type Driver interface {

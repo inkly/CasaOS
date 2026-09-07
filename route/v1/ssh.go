@@ -7,17 +7,17 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/IceWhaleTech/CasaOS-Common/utils/common_err"
-	"github.com/IceWhaleTech/CasaOS-Common/utils/logger"
-	sshHelper "github.com/IceWhaleTech/CasaOS-Common/utils/ssh"
-	"github.com/IceWhaleTech/CasaOS/pkg/utils"
+	"github.com/inkly/CasaOS-Common/utils/common_err"
+	"github.com/inkly/CasaOS-Common/utils/logger"
+	sshHelper "github.com/inkly/CasaOS-Common/utils/ssh"
+	"github.com/inkly/CasaOS/pkg/utils"
 	"github.com/labstack/echo/v4"
 
 	"github.com/gorilla/websocket"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/ssh"
 
-	modelCommon "github.com/IceWhaleTech/CasaOS-Common/model"
+	modelCommon "github.com/inkly/CasaOS-Common/model"
 )
 
 var upgrader = websocket.Upgrader{

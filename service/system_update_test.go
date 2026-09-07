@@ -4,8 +4,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/IceWhaleTech/CasaOS/common"
-	"github.com/IceWhaleTech/CasaOS/pkg/config"
+	"github.com/inkly/CasaOS/common"
+	"github.com/inkly/CasaOS/pkg/config"
 )
 
 func TestResolveUpdateInstallerURL(t *testing.T) {

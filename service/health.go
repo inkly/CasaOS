@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/IceWhaleTech/CasaOS-Common/utils/port"
-	"github.com/IceWhaleTech/CasaOS-Common/utils/systemctl"
+	"github.com/inkly/CasaOS-Common/utils/port"
+	"github.com/inkly/CasaOS-Common/utils/systemctl"
 )
 
 type HealthService interface {

@@ -3,9 +3,9 @@ package service
 import (
 	"io/ioutil"
 
-	"github.com/IceWhaleTech/CasaOS-Common/utils/logger"
-	"github.com/IceWhaleTech/CasaOS/pkg/utils/file"
-	"github.com/IceWhaleTech/CasaOS/pkg/utils/httper"
+	"github.com/inkly/CasaOS-Common/utils/logger"
+	"github.com/inkly/CasaOS/pkg/utils/file"
+	"github.com/inkly/CasaOS/pkg/utils/httper"
 	"go.uber.org/zap"
 )
 

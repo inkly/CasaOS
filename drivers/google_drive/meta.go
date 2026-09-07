@@ -1,7 +1,7 @@
 package google_drive
 
 import (
-	"github.com/IceWhaleTech/CasaOS/internal/driver"
+	"github.com/inkly/CasaOS/internal/driver"
 )
 
 const ICONURL = "./img/driver/GoogleDrive.svg"

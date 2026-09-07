@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	model2 "github.com/IceWhaleTech/CasaOS/service/model"
+	model2 "github.com/inkly/CasaOS/service/model"
 )
 
 func TestValidateSambaUsername(t *testing.T) {

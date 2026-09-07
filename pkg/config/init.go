@@ -16,9 +16,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/IceWhaleTech/CasaOS-Common/utils/constants"
-	"github.com/IceWhaleTech/CasaOS/common"
-	"github.com/IceWhaleTech/CasaOS/model"
+	"github.com/inkly/CasaOS-Common/utils/constants"
+	"github.com/inkly/CasaOS/common"
+	"github.com/inkly/CasaOS/model"
 	"github.com/go-ini/ini"
 )
 

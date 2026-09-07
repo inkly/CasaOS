@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/IceWhaleTech/CasaOS-Common/utils/logger"
+	"github.com/inkly/CasaOS-Common/utils/logger"
 	"github.com/go-resty/resty/v2"
 	"go.uber.org/zap"
 )

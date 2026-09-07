@@ -15,12 +15,12 @@ import (
 	"fmt"
 	"os"
 
-	interfaces "github.com/IceWhaleTech/CasaOS-Common"
-	"github.com/IceWhaleTech/CasaOS-Common/utils/systemctl"
-	"github.com/IceWhaleTech/CasaOS/common"
-	"github.com/IceWhaleTech/CasaOS/pkg/config"
-	"github.com/IceWhaleTech/CasaOS/pkg/sqlite"
-	"github.com/IceWhaleTech/CasaOS/service"
+	interfaces "github.com/inkly/CasaOS-Common"
+	"github.com/inkly/CasaOS-Common/utils/systemctl"
+	"github.com/inkly/CasaOS/common"
+	"github.com/inkly/CasaOS/pkg/config"
+	"github.com/inkly/CasaOS/pkg/sqlite"
+	"github.com/inkly/CasaOS/service"
 	"gorm.io/gorm"
 )
 

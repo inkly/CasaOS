@@ -18,8 +18,8 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/IceWhaleTech/CasaOS/model"
-	"github.com/IceWhaleTech/CasaOS/service"
+	"github.com/inkly/CasaOS/model"
+	"github.com/inkly/CasaOS/service"
 )
 
 func SendAllHardwareStatusBySocket() {

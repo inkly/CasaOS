@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/IceWhaleTech/CasaOS/common"
+	"github.com/inkly/CasaOS/common"
 )
 
 func TestIsVersionNewer(t *testing.T) {

@@ -3,9 +3,9 @@ package v1
 import (
 	"fmt"
 
-	"github.com/IceWhaleTech/CasaOS/model"
-	"github.com/IceWhaleTech/CasaOS/pkg/utils/common_err"
-	"github.com/IceWhaleTech/CasaOS/service"
+	"github.com/inkly/CasaOS/model"
+	"github.com/inkly/CasaOS/pkg/utils/common_err"
+	"github.com/inkly/CasaOS/service"
 	"github.com/labstack/echo/v4"
 )
 

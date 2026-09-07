@@ -1,7 +1,7 @@
 package main
 
 import (
-	interfaces "github.com/IceWhaleTech/CasaOS-Common"
+	interfaces "github.com/inkly/CasaOS-Common"
 )
 
 type migrationTool struct{}

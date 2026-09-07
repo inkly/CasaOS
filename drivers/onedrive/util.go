@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/IceWhaleTech/CasaOS-Common/utils/logger"
-	"github.com/IceWhaleTech/CasaOS/drivers/base"
-	"github.com/IceWhaleTech/CasaOS/pkg/utils"
+	"github.com/inkly/CasaOS-Common/utils/logger"
+	"github.com/inkly/CasaOS/drivers/base"
+	"github.com/inkly/CasaOS/pkg/utils"
 	"go.uber.org/zap"
 )
 

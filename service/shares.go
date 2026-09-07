@@ -15,12 +15,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/IceWhaleTech/CasaOS-Common/utils/command"
-	"github.com/IceWhaleTech/CasaOS-Common/utils/logger"
-	"github.com/IceWhaleTech/CasaOS/pkg/config"
-	"github.com/IceWhaleTech/CasaOS/pkg/utils/file"
-	"github.com/IceWhaleTech/CasaOS/service/model"
-	model2 "github.com/IceWhaleTech/CasaOS/service/model"
+	"github.com/inkly/CasaOS-Common/utils/command"
+	"github.com/inkly/CasaOS-Common/utils/logger"
+	"github.com/inkly/CasaOS/pkg/config"
+	"github.com/inkly/CasaOS/pkg/utils/file"
+	"github.com/inkly/CasaOS/service/model"
+	model2 "github.com/inkly/CasaOS/service/model"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )

@@ -1,11 +1,11 @@
 package v1
 
 import (
-	"github.com/IceWhaleTech/CasaOS-Common/utils/common_err"
-	"github.com/IceWhaleTech/CasaOS/drivers/dropbox"
-	"github.com/IceWhaleTech/CasaOS/drivers/google_drive"
-	"github.com/IceWhaleTech/CasaOS/drivers/onedrive"
-	"github.com/IceWhaleTech/CasaOS/model"
+	"github.com/inkly/CasaOS-Common/utils/common_err"
+	"github.com/inkly/CasaOS/drivers/dropbox"
+	"github.com/inkly/CasaOS/drivers/google_drive"
+	"github.com/inkly/CasaOS/drivers/onedrive"
+	"github.com/inkly/CasaOS/model"
 	"github.com/labstack/echo/v4"
 )
 

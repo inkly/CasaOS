@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	model2 "github.com/IceWhaleTech/CasaOS/service/model"
+	model2 "github.com/inkly/CasaOS/service/model"
 )
 
 const (
