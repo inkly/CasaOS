@@ -9,7 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The Go directive is unchanged at `go 1.21`, but the shared library it now points at brings in `orca-zhang/ecache`, whose package `init()` starts a goroutine that sleeps in a loop for the lifetime of the process. Nothing here calls the cache it backs; the goroutine exists on import alone. The leak check in `service` was taught to ignore it.
 - The Go module path is now `github.com/inkly/CasaOS` and the shared library dependency is `github.com/inkly/CasaOS-Common v0.4.22`, so every log line, stack trace and `go version -m` record on the shipped binary names this distribution rather than IceWhale. Only module paths were rewritten: issue links, the App Store and release URLs, and the upstream credits are untouched, and the generated API clients are byte-identical.
+
+### Fixed
+
+- `FORK_RELEASE_VERSION` carries the distribution release again, not this component's own tag. It is the fallback `CurrentVersion()` returns when `/var/lib/casaos/fork-release` is missing, and that file holds the distribution tag, which is also what `version.json` announces. The two matched while the numbering coincided and had drifted since, so a box without the marker compared 0.4.44 against a feed announcing 0.4.54 and was offered an update it already had, at every poll.
 
 ## [0.4.44] - 2026-09-07
 
