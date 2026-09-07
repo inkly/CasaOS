@@ -25,7 +25,7 @@ curl -fsSL https://github.com/inkly/CasaOS-Install/releases/latest/download/inst
 
 One command for every supported system and architecture; the installer detects both at run time. Run it again to upgrade, or use the update button in the dashboard, which follows this distribution's releases.
 
-**Migrating from IceWhale's or alvins82's installer** works the same way, in place, without uninstalling first. The installer stops and restarts the CasaOS services while upgrading, so back up what matters. Afterwards, `cat /var/lib/casaos/fork-release` prints the distribution release installed — `v0.4.41` for the current one. Do not use `get.casaos.io/update` after migrating: it installs IceWhale's frozen component bundle over this one.
+**Migrating from IceWhale's or alvins82's installer** works the same way, in place, without uninstalling first. The installer stops and restarts the CasaOS services while upgrading, so back up what matters. Afterwards, `cat /var/lib/casaos/fork-release` prints the distribution release installed. Do not use `get.casaos.io/update` after migrating: it installs IceWhale's frozen component bundle over this one.
 
 **If the dashboard reports you are on the latest version and never offers an update**, run the install command once by hand. Up to v0.4.41, four files shipped here still carried the previous fork's release URLs, and one of them rewrote `/etc/casaos/casaos.conf` on every install, so a host installed from this distribution polled a feed whose newest release is older than what it was already running. From CasaOS-Install v0.4.42 onwards, re-running the installer corrects the configuration in place, and the update button follows this distribution on its own afterwards.
 
