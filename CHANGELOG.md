@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- The Go module path is now `github.com/inkly/CasaOS` and the shared library dependency is `github.com/inkly/CasaOS-Common v0.4.22`, so every log line, stack trace and `go version -m` record on the shipped binary names this distribution rather than IceWhale. Only module paths were rewritten: issue links, the App Store and release URLs, and the upstream credits are untouched, and the generated API clients are byte-identical.
+
 ## [0.4.44] - 2026-09-07
 
 ### Changed
