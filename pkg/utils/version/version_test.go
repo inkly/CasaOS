@@ -51,3 +51,42 @@ func TestCurrentVersionFromFile(t *testing.T) {
 		t.Fatalf("installed version returned %q", got)
 	}
 }
+
+// The marker may name a distribution NEWER than the one this binary was built for,
+// because a distribution release need not ship this component. The marker wins: it is
+// what the installer wrote on this host, and the constant is only the floor. Reading
+// the two as equal is what made every distribution release drag a release of this
+// component along.
+func TestInstalledVersionWinsOverTheBuildFloor(t *testing.T) {
+	versionFile := filepath.Join(t.TempDir(), "fork-release")
+	if err := os.WriteFile(versionFile, []byte("v9.9.9\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	current := currentVersionFromFile(versionFile)
+	if current != "9.9.9" {
+		t.Fatalf("installed version returned %q, want %q", current, "9.9.9")
+	}
+
+	// and the host is not then told to update to the release it is already running
+	if IsVersionNewer("v9.9.9", current) {
+		t.Fatal("a host was offered the release it already has")
+	}
+}
+
+// An empty or blank marker is not a version. It falls back rather than reporting "",
+// which IsVersionNewer would read as older than everything.
+func TestBlankMarkerFallsBack(t *testing.T) {
+	fallback := strings.TrimPrefix(common.FORK_RELEASE_VERSION, "v")
+
+	for _, content := range []string{"", "\n", "   \n\t"} {
+		versionFile := filepath.Join(t.TempDir(), "fork-release")
+		if err := os.WriteFile(versionFile, []byte(content), 0o600); err != nil {
+			t.Fatal(err)
+		}
+
+		if got := currentVersionFromFile(versionFile); got != fallback {
+			t.Fatalf("blank marker %q returned %q, want %q", content, got, fallback)
+		}
+	}
+}

@@ -71,10 +71,21 @@ func CurrentVersion() string {
 }
 
 func currentVersionFromFile(path string) string {
-	// Both sources hold the release tag, "v" included: the installer writes it
-	// to FORK_RELEASE_FILE and FORK_RELEASE_VERSION carries the same string.
-	// The API answers a bare version - the dashboard adds the "v" itself, so
-	// the tag's own prefix showed up as "vv0.4.40".
+	// FORK_RELEASE_FILE is the truth: the installer writes the distribution's tag
+	// there on every install and every upgrade, so on any host that has run a
+	// recent installer this is what answers.
+	//
+	// FORK_RELEASE_VERSION is the fallback, and it is a FLOOR rather than a second
+	// copy of the same value: the distribution this binary was BUILT for. The two
+	// may differ, because a distribution release need not ship this component --
+	// and wherever they differ, the marker exists and wins. A host with no marker
+	// has not run a recent installer, so it is running the binary that shipped with
+	// the distribution the constant names, and the constant is the honest answer
+	// for it. Reading them as equal is what made every distribution release drag a
+	// release of this component along for one string.
+	//
+	// Both hold the tag with its "v". The API answers a bare version - the dashboard
+	// adds the "v" itself, so the tag's own prefix showed up as "vv0.4.40".
 	version := common.FORK_RELEASE_VERSION
 	if data, err := os.ReadFile(path); err == nil {
 		if installedVersion := strings.TrimSpace(string(data)); installedVersion != "" {

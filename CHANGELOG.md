@@ -5,7 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.4.48] - 2026-09-09
+## [Unreleased]
+
+### Changed
+
+- `FORK_RELEASE_VERSION` is a floor, not a second copy of the distribution tag, and this component no longer ships with every distribution release because of it. It is the distribution this binary was BUILT for; `/var/lib/casaos/fork-release`, which the installer writes on every install and every upgrade, is the truth, and wherever the two differ that marker exists and wins. A host with no marker has not run a recent installer, so it is running the binary that shipped with the distribution the constant names — which makes the constant the honest answer for exactly the hosts that fall back to it. This supersedes the note on 0.4.46, which read the two as equal and made every distribution release drag a release of this component along for one string.
+## [0.4.48] - ## [0.4.48] - 2026-09-09
 
 ### Changed
 
