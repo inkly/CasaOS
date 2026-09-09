@@ -5,7 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.4.46] - 2026-09-09
+## [0.4.47] - 2026-09-09
+
+### Changed
+
+- `FORK_RELEASE_VERSION` carries `v0.4.57`, the distribution this binary ships in. Nothing else changed; this component ships with every distribution release because that constant is the fallback the dashboard reads when `/var/lib/casaos/fork-release` is missing, and that marker holds the distribution's tag.
+## [0.4.46] - ## [0.4.46] - 2026-09-09
 
 ### Changed
 
