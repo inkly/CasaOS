@@ -5,11 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.4.49] - 2026-09-10
 
 ### Changed
 
+- The Go module is now `github.com/ReCasaOS/CasaOS` and it builds against `github.com/ReCasaOS/CasaOS-Common v0.4.23`. The repositories moved to the ReCasaOS organisation, and a module path is not a URL that follows a redirect: the tool compares the path declared in `go.mod` with the path it was asked for. Every log line, every stack trace and `go version -m` on a running box now name the project where it actually lives.
+- `.goreleaser.yaml` follows the same rename, including the `-X github.com/ReCasaOS/CasaOS/drivers/...` flags that address package variables by import path. Left on the old path they would have become silent no-ops. They are inert either way: the release workflow builds with `go build` and its own `-ldflags`, and has not run GoReleaser for some time — so the cloud-drive credentials those flags exist to inject have never reached a released binary, and `client_id` ships as its default, `"private build"`. That is unchanged by this release and is recorded here because it was found while checking the rename.
 - `FORK_RELEASE_VERSION` is a floor, not a second copy of the distribution tag, and this component no longer ships with every distribution release because of it. It is the distribution this binary was BUILT for; `/var/lib/casaos/fork-release`, which the installer writes on every install and every upgrade, is the truth, and wherever the two differ that marker exists and wins. A host with no marker has not run a recent installer, so it is running the binary that shipped with the distribution the constant names — which makes the constant the honest answer for exactly the hosts that fall back to it. This supersedes the note on 0.4.46, which read the two as equal and made every distribution release drag a release of this component along for one string.
+- Nothing else changed. The App Store catalogue, the icon CDN, the cloud OAuth host, the migration entries and the upstream copyright headers are untouched.
 
 ## [0.4.48] - 2026-09-09
 
