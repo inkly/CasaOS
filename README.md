@@ -1,5 +1,12 @@
 # CasaOS
 
+> **Not affiliated with IceWhale.**
+> This is an independent, community-maintained distribution of CasaOS. It is not produced, endorsed, sponsored, certified or supported by Shanghai IceWhale Technology Limited or by any of the upstream CasaOS maintainers.
+>
+> CASAOS is a trademark of Shanghai IceWhale Technology Limited. The name is used here only to identify the upstream project that this software is a distribution of, as permitted for referential use; no rights in the CasaOS name or logo are claimed, and no affiliation is implied.
+>
+> The original project is [IceWhaleTech/CasaOS](https://github.com/IceWhaleTech/CasaOS). Please do not report problems with this distribution to IceWhale — open them at [inkly/CasaOS/issues](https://github.com/inkly/CasaOS/issues).
+
 A personal cloud for the home: a dashboard, an app store, Docker apps, files and shares on your own hardware. This repository is the core service of the **inkly distribution of CasaOS**, a maintained release of the project after upstream [IceWhaleTech/CasaOS](https://github.com/IceWhaleTech/CasaOS) stopped shipping in 2025.
 
 <p align="center">
