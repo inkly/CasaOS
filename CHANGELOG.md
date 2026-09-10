@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.50] - 2026-09-10
+
+### Changed
+
+- **The API documentation says whose project this is.** `api/casaos/openapi.yaml` is embedded verbatim by `//go:embed` and served at `/doc`, so every URL in it is plaintext inside the shipped binary and every image in it is fetched by the reader's browser. It opened with IceWhale's banner, hosted in `IceWhaleTech/logo`, and closed by sending anyone with a problem to IceWhale's repository and Discord. The banner is gone — there is no ReCasaOS banner to put in its place, and a broken image is better than someone else's — and the link now points at this distribution's own issues.
+- The new-issue chooser no longer sends questions about this distribution to IceWhale's discussions or their Discord, and the `[Alpha Only]` bug form, whose only instruction was to join that Discord first, is removed. The App Request link stays where it is: adding an app to the catalogue is a request to the catalogue's curator, and the catalogue is IceWhale's.
+
+### Removed
+
+- `delete-old-service.sh`, which shipped into `/usr/share/casaos/shell` on every box and queried IceWhale's release API from a script nothing has invoked since the single-binary days.
+
+### Added
+
+- A test that reads every file the installer ships and fails on any that names IceWhale, with the catalogue, the icon CDN, the cloud OAuth host and the migration lists excused by name. The old guard checked four files it was handed; this one asks the opposite question, so a file that nobody thought to add has to be excused on purpose rather than merely overlooked. Run against the previous commit it names `delete-old-service.sh`.
+
 ## [0.4.49] - 2026-09-10
 
 ### Changed

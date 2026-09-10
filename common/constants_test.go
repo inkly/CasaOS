@@ -1,8 +1,11 @@
 package common
 
 import (
+	"io/fs"
 	"os"
+	"path/filepath"
 	"regexp"
+	"strings"
 	"testing"
 )
 
@@ -35,6 +38,55 @@ func TestShippedUpdateURLsMatchConstants(t *testing.T) {
 			if got != FORK_UPDATE_URL && got != FORK_VERSION_URL {
 				t.Errorf("%s: %q is neither FORK_UPDATE_URL (%q) nor FORK_VERSION_URL (%q)", path, got, FORK_UPDATE_URL, FORK_VERSION_URL)
 			}
+		}
+	}
+}
+
+// The guard above only reads the files it is given, and a file nobody thought to add
+// is exactly how an IceWhale URL survives a rebrand: delete-old-service.sh shipped
+// into /usr/share/casaos/shell on every box for years, calling IceWhale's release API
+// from a script nothing invoked. This one asks the opposite question -- what ships
+// that still names somebody else -- so a new file has to be excused on purpose rather
+// than merely overlooked.
+func TestNothingShippedNamesIceWhaleExceptTheCatalogue(t *testing.T) {
+	// The App Store is IceWhale's and stays IceWhale's, and so do the migration
+	// entries: those releases exist nowhere else. Everything else is ours to answer
+	// for.
+	allowed := regexp.MustCompile(`(?i)IceWhaleTech/CasaOS-AppStore|icon\.casaos\.io|cloudoauth\.files\.casaos\.app|IceWhaleTech/_appstore`)
+	mentions := regexp.MustCompile(`(?i)icewhale`)
+
+	roots := []string{"../build/sysroot", "../build/scripts"}
+
+	for _, root := range roots {
+		err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
+			if err != nil || d.IsDir() {
+				return err
+			}
+			// migration.list is a list of releases that only ever existed upstream
+			if d.Name() == "migration.list" {
+				return nil
+			}
+
+			content, err := os.ReadFile(path)
+			if err != nil {
+				return err
+			}
+
+			for _, line := range strings.Split(string(content), "\n") {
+				if !mentions.MatchString(line) || allowed.MatchString(line) {
+					continue
+				}
+				// a per-file copyright notice is an attribution obligation
+				trimmed := strings.TrimLeft(line, " \t#*/-")
+				if strings.HasPrefix(trimmed, "@") || strings.Contains(line, "Copyright (c)") {
+					continue
+				}
+				t.Errorf("%s ships and names IceWhale: %q", path, strings.TrimSpace(line))
+			}
+			return nil
+		})
+		if err != nil {
+			t.Fatalf("%s: %v", root, err)
 		}
 	}
 }

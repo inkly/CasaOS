@@ -1,5 +1,5 @@
 {
-  "name": "@icewhale/casaos-openapi",
+  "name": "casaos-openapi",
   "version": "0.0.1",
   
   "scripts": {
@@ -10,7 +10,7 @@
     "generate:ts": "npx openapi-typescript-codegen --input ./api/casaos/openapi.yaml --output ./generate",
     "start": "yarn generate:local && yarn build"
   },
-  "homepage": "https://github.com/IceWhaleTech/CasaOS#readme",
+  "homepage": "https://github.com/ReCasaOS/CasaOS#readme",
   "description": "Casaos Typescript+Axios SDK",
   "keywords": [
     "CasaOS",
