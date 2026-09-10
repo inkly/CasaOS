@@ -5,15 +5,15 @@
 >
 > CASAOS is a trademark of Shanghai IceWhale Technology Limited. The name is used here only to identify the upstream project that this software is a distribution of, as permitted for referential use; no rights in the CasaOS name or logo are claimed, and no affiliation is implied.
 >
-> The original project is [IceWhaleTech/CasaOS](https://github.com/IceWhaleTech/CasaOS). Please do not report problems with this distribution to IceWhale — open them at [inkly/CasaOS/issues](https://github.com/inkly/CasaOS/issues).
+> The original project is [IceWhaleTech/CasaOS](https://github.com/IceWhaleTech/CasaOS). Please do not report problems with this distribution to IceWhale — open them at [inkly/CasaOS/issues](https://github.com/ReCasaOS/CasaOS/issues).
 
 A personal cloud for the home: a dashboard, an app store, Docker apps, files and shares on your own hardware. This repository is the core service of the **inkly distribution of CasaOS**, a maintained release of the project after upstream [IceWhaleTech/CasaOS](https://github.com/IceWhaleTech/CasaOS) stopped shipping in 2025.
 
 <p align="center">
-    <a href="https://github.com/inkly/CasaOS-Install/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/inkly/CasaOS-Install?color=162453&style=flat-square&label=Distribution" /></a>
-    <a href="https://github.com/inkly/CasaOS/blob/main/LICENSE"><img alt="Licence" src="https://img.shields.io/github/license/inkly/CasaOS?color=162453&style=flat-square&label=License" /></a>
-    <a href="https://github.com/inkly/CasaOS/issues"><img alt="Issues" src="https://img.shields.io/github/issues/inkly/CasaOS?color=162453&style=flat-square&label=Issues" /></a>
-    <a href="https://github.com/inkly/CasaOS/pulls"><img alt="Pull requests" src="https://img.shields.io/github/issues-pr/inkly/CasaOS?color=162453&style=flat-square&label=PRs" /></a>
+    <a href="https://github.com/ReCasaOS/CasaOS-Install/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/inkly/CasaOS-Install?color=162453&style=flat-square&label=Distribution" /></a>
+    <a href="https://github.com/ReCasaOS/CasaOS/blob/main/LICENSE"><img alt="Licence" src="https://img.shields.io/github/license/inkly/CasaOS?color=162453&style=flat-square&label=License" /></a>
+    <a href="https://github.com/ReCasaOS/CasaOS/issues"><img alt="Issues" src="https://img.shields.io/github/issues/inkly/CasaOS?color=162453&style=flat-square&label=Issues" /></a>
+    <a href="https://github.com/ReCasaOS/CasaOS/pulls"><img alt="Pull requests" src="https://img.shields.io/github/issues-pr/inkly/CasaOS?color=162453&style=flat-square&label=PRs" /></a>
     <br/><br/>
     <kbd>
       <picture>
@@ -27,7 +27,7 @@ A personal cloud for the home: a dashboard, an app store, Docker apps, files and
 ## Install
 
 ```sh
-curl -fsSL https://github.com/inkly/CasaOS-Install/releases/latest/download/install.sh | sudo bash
+curl -fsSL https://github.com/ReCasaOS/CasaOS-Install/releases/latest/download/install.sh | sudo bash
 ```
 
 One command for every supported system and architecture; the installer detects both at run time. Run it again to upgrade, or use the update button in the dashboard, which follows this distribution's releases.
@@ -36,7 +36,7 @@ One command for every supported system and architecture; the installer detects b
 
 **If the dashboard reports you are on the latest version and never offers an update**, run the install command once by hand. Up to v0.4.41, four files shipped here still carried the previous fork's release URLs, and one of them rewrote `/etc/casaos/casaos.conf` on every install, so a host installed from this distribution polled a feed whose newest release is older than what it was already running. From CasaOS-Install v0.4.42 onwards, re-running the installer corrects the configuration in place, and the update button follows this distribution on its own afterwards.
 
-Everything the installer downloads is verified against a SHA-256 digest before extraction. What is in each release, and how a release is built, is described in [CasaOS-Install](https://github.com/inkly/CasaOS-Install#readme).
+Everything the installer downloads is verified against a SHA-256 digest before extraction. What is in each release, and how a release is built, is described in [CasaOS-Install](https://github.com/ReCasaOS/CasaOS-Install#readme).
 
 ### Compatibility
 
@@ -74,7 +74,7 @@ Relative to upstream, through alvins82's fork and then here. The full list per r
 
 ## Community and contributing
 
-Bug reports and requests go to [issues on this repository](https://github.com/inkly/CasaOS/issues), whichever component is involved. Pull requests are welcome on any of the component repositories under [inkly](https://github.com/inkly?tab=repositories&q=CasaOS); each has its own release workflow, and the installer pins them.
+Bug reports and requests go to [issues on this repository](https://github.com/ReCasaOS/CasaOS/issues), whichever component is involved. Pull requests are welcome on any of the component repositories under [inkly](https://github.com/inkly?tab=repositories&q=CasaOS); each has its own release workflow, and the installer pins them.
 
 The upstream Discord, wiki and website belong to IceWhale and are not run by this distribution.
 
@@ -82,14 +82,14 @@ The upstream Discord, wiki and website belong to IceWhale and are not run by thi
 
 | Repository | Role |
 |---|---|
-| [CasaOS](https://github.com/inkly/CasaOS) | this one: system API, files, shares, updater |
-| [CasaOS-UI](https://github.com/inkly/CasaOS-UI) | the dashboard (a submodule here) |
-| [CasaOS-AppManagement](https://github.com/inkly/CasaOS-AppManagement) | apps, Compose, the app store client |
-| [CasaOS-Gateway](https://github.com/inkly/CasaOS-Gateway) | reverse proxy in front of every service |
-| [CasaOS-UserService](https://github.com/inkly/CasaOS-UserService) | accounts and login |
-| [CasaOS-MessageBus](https://github.com/inkly/CasaOS-MessageBus) | events between services |
-| [CasaOS-LocalStorage](https://github.com/inkly/CasaOS-LocalStorage) | disks, volumes, merged storage |
-| [CasaOS-Install](https://github.com/inkly/CasaOS-Install) | the installer and the release bundle |
+| [CasaOS](https://github.com/ReCasaOS/CasaOS) | this one: system API, files, shares, updater |
+| [CasaOS-UI](https://github.com/ReCasaOS/CasaOS-UI) | the dashboard (a submodule here) |
+| [CasaOS-AppManagement](https://github.com/ReCasaOS/CasaOS-AppManagement) | apps, Compose, the app store client |
+| [CasaOS-Gateway](https://github.com/ReCasaOS/CasaOS-Gateway) | reverse proxy in front of every service |
+| [CasaOS-UserService](https://github.com/ReCasaOS/CasaOS-UserService) | accounts and login |
+| [CasaOS-MessageBus](https://github.com/ReCasaOS/CasaOS-MessageBus) | events between services |
+| [CasaOS-LocalStorage](https://github.com/ReCasaOS/CasaOS-LocalStorage) | disks, volumes, merged storage |
+| [CasaOS-Install](https://github.com/ReCasaOS/CasaOS-Install) | the installer and the release bundle |
 
 ## Development
 

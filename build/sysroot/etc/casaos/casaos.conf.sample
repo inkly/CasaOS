@@ -16,7 +16,7 @@ UserDataPath = /var/lib/casaos/conf
 RunMode = release
 Token = 
 USBAutoMount =
-UpdateUrl = https://github.com/inkly/CasaOS-Install/releases/latest/download/install.sh
-UpdateVersionUrl = https://github.com/inkly/CasaOS-Install/releases/latest/download/version.json
+UpdateUrl = https://github.com/ReCasaOS/CasaOS-Install/releases/latest/download/install.sh
+UpdateVersionUrl = https://github.com/ReCasaOS/CasaOS-Install/releases/latest/download/version.json
 
 [system]

@@ -244,7 +244,7 @@ changelog:
 #   name_template: "v{{ .Version }}"
 release:
   github:
-    owner: inkly
+    owner: ReCasaOS
     name: CasaOS
   draft: false
   prerelease: auto
