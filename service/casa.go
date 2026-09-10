@@ -6,10 +6,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inkly/CasaOS/common"
-	"github.com/inkly/CasaOS/model"
-	"github.com/inkly/CasaOS/pkg/config"
-	"github.com/inkly/CasaOS/pkg/utils/httper"
+	"github.com/ReCasaOS/CasaOS/common"
+	"github.com/ReCasaOS/CasaOS/model"
+	"github.com/ReCasaOS/CasaOS/pkg/config"
+	"github.com/ReCasaOS/CasaOS/pkg/utils/httper"
 	"github.com/tidwall/gjson"
 )
 

@@ -6,9 +6,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/inkly/CasaOS/codegen"
-	"github.com/inkly/CasaOS/pkg/utils/file"
-	"github.com/inkly/CasaOS/service"
+	"github.com/ReCasaOS/CasaOS/codegen"
+	"github.com/ReCasaOS/CasaOS/pkg/utils/file"
+	"github.com/ReCasaOS/CasaOS/service"
 	"github.com/labstack/echo/v4"
 	"github.com/mholt/archiver/v3"
 )

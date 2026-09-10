@@ -3,8 +3,8 @@ package gredis
 import (
 	"time"
 
+	"github.com/ReCasaOS/CasaOS/model"
 	"github.com/gomodule/redigo/redis"
-	"github.com/inkly/CasaOS/model"
 )
 
 func GetRedisConn(m *model.RedisModel) *redis.Pool {

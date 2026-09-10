@@ -7,8 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/inkly/CasaOS/model"
-	"github.com/inkly/CasaOS/service"
+	"github.com/ReCasaOS/CasaOS/model"
+	"github.com/ReCasaOS/CasaOS/service"
 	"github.com/labstack/echo/v4"
 )
 

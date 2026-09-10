@@ -1,8 +1,8 @@
 package v2
 
 import (
-	"github.com/inkly/CasaOS/codegen"
-	"github.com/inkly/CasaOS/service"
+	"github.com/ReCasaOS/CasaOS/codegen"
+	"github.com/ReCasaOS/CasaOS/service"
 )
 
 type CasaOS struct {

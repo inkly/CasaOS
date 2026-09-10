@@ -3,7 +3,7 @@ package service
 import (
 	"testing"
 
-	"github.com/inkly/CasaOS-Common/utils/logger"
+	"github.com/ReCasaOS/CasaOS-Common/utils/logger"
 	"go.uber.org/goleak"
 )
 

@@ -13,7 +13,7 @@ package config
 import (
 	"path/filepath"
 
-	"github.com/inkly/CasaOS-Common/utils/constants"
+	"github.com/ReCasaOS/CasaOS-Common/utils/constants"
 )
 
 var CasaOSConfigFilePath = filepath.Join(constants.DefaultConfigPath, "casaos.conf")

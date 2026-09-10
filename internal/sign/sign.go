@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/inkly/CasaOS/pkg/sign"
+	"github.com/ReCasaOS/CasaOS/pkg/sign"
 )
 
 var once sync.Once

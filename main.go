@@ -1,5 +1,5 @@
 //go:generate bash -c "mkdir -p codegen && go run github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.12.4 -generate types,server,spec -package codegen api/casaos/openapi.yaml > codegen/casaos_api.go"
-//go:generate bash -c "mkdir -p codegen/message_bus && go run github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.12.4 -generate types,client -package message_bus https://raw.githubusercontent.com/inkly/CasaOS-MessageBus/v0.4.19/api/message_bus/openapi.yaml > codegen/message_bus/api.go"
+//go:generate bash -c "mkdir -p codegen/message_bus && go run github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.12.4 -generate types,client -package message_bus https://raw.githubusercontent.com/ReCasaOS/CasaOS-MessageBus/v0.4.19/api/message_bus/openapi.yaml > codegen/message_bus/api.go"
 package main
 
 import (
@@ -12,21 +12,21 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/inkly/CasaOS-Common/model"
-	"github.com/inkly/CasaOS-Common/utils/command"
-	"github.com/inkly/CasaOS-Common/utils/constants"
-	"github.com/inkly/CasaOS-Common/utils/logger"
+	"github.com/ReCasaOS/CasaOS-Common/model"
+	"github.com/ReCasaOS/CasaOS-Common/utils/command"
+	"github.com/ReCasaOS/CasaOS-Common/utils/constants"
+	"github.com/ReCasaOS/CasaOS-Common/utils/logger"
 
-	util_http "github.com/inkly/CasaOS-Common/utils/http"
+	util_http "github.com/ReCasaOS/CasaOS-Common/utils/http"
 
+	"github.com/ReCasaOS/CasaOS/common"
+	"github.com/ReCasaOS/CasaOS/pkg/cache"
+	"github.com/ReCasaOS/CasaOS/pkg/config"
+	"github.com/ReCasaOS/CasaOS/pkg/sqlite"
+	"github.com/ReCasaOS/CasaOS/pkg/utils/file"
+	"github.com/ReCasaOS/CasaOS/route"
+	"github.com/ReCasaOS/CasaOS/service"
 	"github.com/coreos/go-systemd/daemon"
-	"github.com/inkly/CasaOS/common"
-	"github.com/inkly/CasaOS/pkg/cache"
-	"github.com/inkly/CasaOS/pkg/config"
-	"github.com/inkly/CasaOS/pkg/sqlite"
-	"github.com/inkly/CasaOS/pkg/utils/file"
-	"github.com/inkly/CasaOS/route"
-	"github.com/inkly/CasaOS/service"
 	"go.uber.org/zap"
 
 	"github.com/robfig/cron/v3"

@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/inkly/CasaOS-Common/utils/logger"
+	"github.com/ReCasaOS/CasaOS-Common/utils/logger"
 
-	"github.com/inkly/CasaOS/internal/driver"
-	"github.com/inkly/CasaOS/model"
+	"github.com/ReCasaOS/CasaOS/internal/driver"
+	"github.com/ReCasaOS/CasaOS/model"
 	"go.uber.org/zap"
 )
 

@@ -1,7 +1,7 @@
 package common
 
 import (
-	"github.com/inkly/CasaOS/codegen/message_bus"
+	"github.com/ReCasaOS/CasaOS/codegen/message_bus"
 )
 
 // devtype -> action -> event

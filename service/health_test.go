@@ -3,7 +3,7 @@ package service_test
 import (
 	"testing"
 
-	"github.com/inkly/CasaOS/service"
+	"github.com/ReCasaOS/CasaOS/service"
 	"github.com/stretchr/testify/assert"
 )
 

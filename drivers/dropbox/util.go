@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/ReCasaOS/CasaOS-Common/utils/logger"
+	"github.com/ReCasaOS/CasaOS/drivers/base"
 	"github.com/go-resty/resty/v2"
-	"github.com/inkly/CasaOS-Common/utils/logger"
-	"github.com/inkly/CasaOS/drivers/base"
 	"go.uber.org/zap"
 )
 

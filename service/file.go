@@ -19,9 +19,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/inkly/CasaOS-Common/utils/logger"
-	"github.com/inkly/CasaOS/model"
-	"github.com/inkly/CasaOS/pkg/utils/file"
+	"github.com/ReCasaOS/CasaOS-Common/utils/logger"
+	"github.com/ReCasaOS/CasaOS/model"
+	"github.com/ReCasaOS/CasaOS/pkg/utils/file"
 	"github.com/moby/sys/mountinfo"
 	"go.uber.org/zap"
 )

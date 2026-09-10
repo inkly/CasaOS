@@ -1,7 +1,7 @@
 package dropbox
 
 import (
-	"github.com/inkly/CasaOS/internal/driver"
+	"github.com/ReCasaOS/CasaOS/internal/driver"
 )
 
 const ICONURL = "./img/driver/Dropbox.svg"

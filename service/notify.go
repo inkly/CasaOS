@@ -8,12 +8,12 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/inkly/CasaOS-Common/utils/logger"
-	"github.com/inkly/CasaOS/common"
-	model2 "github.com/inkly/CasaOS/model"
-	"github.com/inkly/CasaOS/model/notify"
-	"github.com/inkly/CasaOS/service/model"
-	"github.com/inkly/CasaOS/types"
+	"github.com/ReCasaOS/CasaOS-Common/utils/logger"
+	"github.com/ReCasaOS/CasaOS/common"
+	model2 "github.com/ReCasaOS/CasaOS/model"
+	"github.com/ReCasaOS/CasaOS/model/notify"
+	"github.com/ReCasaOS/CasaOS/service/model"
+	"github.com/ReCasaOS/CasaOS/types"
 	"go.uber.org/zap"
 	"golang.org/x/sync/syncmap"
 

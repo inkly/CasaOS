@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/inkly/CasaOS-Common/utils"
-	"github.com/inkly/CasaOS/codegen"
-	"github.com/inkly/CasaOS/common"
-	"github.com/inkly/CasaOS/pkg/utils/httper"
+	"github.com/ReCasaOS/CasaOS-Common/utils"
+	"github.com/ReCasaOS/CasaOS/codegen"
+	"github.com/ReCasaOS/CasaOS/common"
+	"github.com/ReCasaOS/CasaOS/pkg/utils/httper"
 	"github.com/labstack/echo/v4"
 	"github.com/tidwall/gjson"
 )

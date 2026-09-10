@@ -6,11 +6,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/inkly/CasaOS-Common/external"
-	"github.com/inkly/CasaOS-Common/utils/jwt"
-	"github.com/inkly/CasaOS/common"
-	"github.com/inkly/CasaOS/pkg/config"
-	v1 "github.com/inkly/CasaOS/route/v1"
+	"github.com/ReCasaOS/CasaOS-Common/external"
+	"github.com/ReCasaOS/CasaOS-Common/utils/jwt"
+	"github.com/ReCasaOS/CasaOS/common"
+	"github.com/ReCasaOS/CasaOS/pkg/config"
+	v1 "github.com/ReCasaOS/CasaOS/route/v1"
 	"github.com/labstack/echo/v4"
 	echo_middleware "github.com/labstack/echo/v4/middleware"
 )

@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/inkly/CasaOS/codegen"
+	"github.com/ReCasaOS/CasaOS/codegen"
 	"github.com/labstack/echo/v4"
 )
 

@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ReCasaOS/CasaOS-Common/utils/logger"
 	"github.com/go-resty/resty/v2"
-	"github.com/inkly/CasaOS-Common/utils/logger"
 	"go.uber.org/zap"
 )
 

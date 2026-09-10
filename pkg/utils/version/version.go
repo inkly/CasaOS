@@ -16,8 +16,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/inkly/CasaOS/common"
-	"github.com/inkly/CasaOS/model"
+	"github.com/ReCasaOS/CasaOS/common"
+	"github.com/ReCasaOS/CasaOS/model"
 )
 
 var numericVersionPart = regexp.MustCompile(`[0-9]+`)

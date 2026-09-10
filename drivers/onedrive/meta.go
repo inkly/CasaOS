@@ -1,7 +1,7 @@
 package onedrive
 
 import (
-	"github.com/inkly/CasaOS/internal/driver"
+	"github.com/ReCasaOS/CasaOS/internal/driver"
 )
 
 const ICONURL = "./img/driver/OneDrive.svg"

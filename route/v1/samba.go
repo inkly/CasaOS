@@ -20,17 +20,17 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/inkly/CasaOS-Common/utils/logger"
-	"github.com/inkly/CasaOS-Common/utils/systemctl"
+	"github.com/ReCasaOS/CasaOS-Common/utils/logger"
+	"github.com/ReCasaOS/CasaOS-Common/utils/systemctl"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
 
-	"github.com/inkly/CasaOS/model"
-	"github.com/inkly/CasaOS/pkg/samba"
-	"github.com/inkly/CasaOS/pkg/utils/common_err"
-	"github.com/inkly/CasaOS/pkg/utils/file"
-	"github.com/inkly/CasaOS/service"
-	model2 "github.com/inkly/CasaOS/service/model"
+	"github.com/ReCasaOS/CasaOS/model"
+	"github.com/ReCasaOS/CasaOS/pkg/samba"
+	"github.com/ReCasaOS/CasaOS/pkg/utils/common_err"
+	"github.com/ReCasaOS/CasaOS/pkg/utils/file"
+	"github.com/ReCasaOS/CasaOS/service"
+	model2 "github.com/ReCasaOS/CasaOS/service/model"
 )
 
 // service

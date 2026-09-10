@@ -11,8 +11,8 @@
 package service
 
 import (
-	"github.com/inkly/CasaOS/service/model"
-	model2 "github.com/inkly/CasaOS/service/model"
+	"github.com/ReCasaOS/CasaOS/service/model"
+	model2 "github.com/ReCasaOS/CasaOS/service/model"
 	"gorm.io/gorm"
 )
 

@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/inkly/CasaOS/pkg/config"
+	"github.com/ReCasaOS/CasaOS/pkg/config"
 )
 
 func TestIsDebianFamily(t *testing.T) {

@@ -1,9 +1,10 @@
-module github.com/inkly/CasaOS
+module github.com/ReCasaOS/CasaOS
 
 go 1.21
 
 require (
 	github.com/Curtis-Milo/nat-type-identifier-go v0.0.0-20220215191915-18d42168c63d
+	github.com/ReCasaOS/CasaOS-Common v0.4.23
 	github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf
 	github.com/deckarep/golang-set/v2 v2.3.0
 	github.com/deepmap/oapi-codegen v1.12.4
@@ -21,7 +22,6 @@ require (
 	github.com/gorilla/websocket v1.5.0
 	github.com/h2non/filetype v1.1.3
 	github.com/hirochachacha/go-smb2 v1.1.0
-	github.com/inkly/CasaOS-Common v0.4.22
 	github.com/json-iterator/go v1.1.12
 	github.com/labstack/echo/v4 v4.12.0
 	github.com/maruel/natural v1.1.0

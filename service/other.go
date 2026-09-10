@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ReCasaOS/CasaOS-Common/utils/logger"
+	"github.com/ReCasaOS/CasaOS/model"
 	"github.com/go-resty/resty/v2"
-	"github.com/inkly/CasaOS-Common/utils/logger"
-	"github.com/inkly/CasaOS/model"
 	"github.com/tidwall/gjson"
 	"go.uber.org/zap"
 )

@@ -4,9 +4,9 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/inkly/CasaOS/internal/conf"
+	"github.com/ReCasaOS/CasaOS/internal/conf"
 
-	"github.com/inkly/CasaOS/internal/driver"
+	"github.com/ReCasaOS/CasaOS/internal/driver"
 	"github.com/pkg/errors"
 )
 

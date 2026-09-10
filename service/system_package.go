@@ -16,8 +16,8 @@ import (
 	"sync"
 	"time"
 
-	commonfile "github.com/inkly/CasaOS-Common/utils/file"
-	"github.com/inkly/CasaOS/pkg/config"
+	commonfile "github.com/ReCasaOS/CasaOS-Common/utils/file"
+	"github.com/ReCasaOS/CasaOS/pkg/config"
 )
 
 const (

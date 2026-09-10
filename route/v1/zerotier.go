@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/inkly/CasaOS-Common/utils/logger"
-	"github.com/inkly/CasaOS/common"
-	"github.com/inkly/CasaOS/pkg/utils/httper"
+	"github.com/ReCasaOS/CasaOS-Common/utils/logger"
+	"github.com/ReCasaOS/CasaOS/common"
+	"github.com/ReCasaOS/CasaOS/pkg/utils/httper"
 	"github.com/labstack/echo/v4"
 	"github.com/tidwall/gjson"
 	"go.uber.org/zap"

@@ -3,8 +3,8 @@ package service
 import (
 	"testing"
 
-	"github.com/inkly/CasaOS/common"
-	"github.com/inkly/CasaOS/pkg/config"
+	"github.com/ReCasaOS/CasaOS/common"
+	"github.com/ReCasaOS/CasaOS/pkg/config"
 )
 
 func TestParseReleaseVersion(t *testing.T) {

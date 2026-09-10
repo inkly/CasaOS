@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/ReCasaOS/CasaOS-Common/utils/logger"
+	"github.com/ReCasaOS/CasaOS/drivers/base"
+	"github.com/ReCasaOS/CasaOS/model"
+	"github.com/ReCasaOS/CasaOS/pkg/utils"
 	"github.com/go-resty/resty/v2"
-	"github.com/inkly/CasaOS-Common/utils/logger"
-	"github.com/inkly/CasaOS/drivers/base"
-	"github.com/inkly/CasaOS/model"
-	"github.com/inkly/CasaOS/pkg/utils"
 	log "github.com/sirupsen/logrus"
 	"go.uber.org/zap"
 )
