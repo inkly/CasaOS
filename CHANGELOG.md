@@ -10,22 +10,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - `FORK_RELEASE_VERSION` is a floor, not a second copy of the distribution tag, and this component no longer ships with every distribution release because of it. It is the distribution this binary was BUILT for; `/var/lib/casaos/fork-release`, which the installer writes on every install and every upgrade, is the truth, and wherever the two differ that marker exists and wins. A host with no marker has not run a recent installer, so it is running the binary that shipped with the distribution the constant names — which makes the constant the honest answer for exactly the hosts that fall back to it. This supersedes the note on 0.4.46, which read the two as equal and made every distribution release drag a release of this component along for one string.
-## [0.4.48] - ## [0.4.48] - 2026-09-09
+
+## [0.4.48] - 2026-09-09
 
 ### Changed
 
 - `FORK_RELEASE_VERSION` carries `v0.4.58`, the distribution this binary ships in. Nothing else changed.
-## [0.4.47] - ## [0.4.47] - 2026-09-09
+
+## [0.4.47] - 2026-09-09
 
 ### Changed
 
 - `FORK_RELEASE_VERSION` carries `v0.4.57`, the distribution this binary ships in. Nothing else changed; this component ships with every distribution release because that constant is the fallback the dashboard reads when `/var/lib/casaos/fork-release` is missing, and that marker holds the distribution's tag.
-## [0.4.46] - ## [0.4.46] - 2026-09-09
+
+## [0.4.46] - 2026-09-09
 
 ### Changed
 
 - `FORK_RELEASE_VERSION` carries `v0.4.56`. It is the fallback the dashboard reads when `/var/lib/casaos/fork-release` is missing, and that file holds the distribution release, so the constant has to move with the distribution rather than with this component. Every distribution release ships this component for that reason; the installer stops and reinstalls every service on each run anyway, so it costs no restart that was not already happening.
-## [0.4.45] - ## [0.4.45] - 2026-09-07
+
+## [0.4.45] - 2026-09-07
 
 ### Changed
 
